@@ -38,7 +38,8 @@ def teleportDron(dronName, client, pose=airsim.Pose()):
 def main():
     generador = ImagesGenerator('Drone1', 'Drone2')
     generador.teleportDron(0, 1, 1, -1, 1, 1, 1)
-    generador.tomarImagen(0)
+    # generador.tomarImagen(0)
+    generador.tomarImagenesAleatorias(1)
     # client = crearCliente()
     #
     # teleportDron('Drone1', client,
