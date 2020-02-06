@@ -40,6 +40,7 @@ class DroneController:
         roll = random.uniform(-0.8, 0.8)
         yaw = random.uniform(-np.pi, np.pi)
         self.teleportDron(x, y, z, pitch, roll, yaw)
+        # self.teleportDron(0, 0, -20, 0, 0, 0)
 
     # Devuelve una imagen de la escena en formato np array RGB uint8.
     # Si mostrar es True se imprime la imágen devuelta.
@@ -61,9 +62,7 @@ class DroneController:
     # campo de visión del dronVisor.
     def moverAleatorioAcampoDeVision(self, dronVisor):
         distanciaPlano = random.uniform(2, 10)
-        maxAncho = (distanciaPlano * np.tan(
-            np.radians(self.fovCamara / 2)) *
-                    np.sin(np.arctan(self.ratio)))
+        maxAncho = distanciaPlano * np.tan(np.radians(self.fovCamara / 2))
         maxAlto = maxAncho / self.ratio
 
         poseVisor = self.client.simGetVehiclePose(dronVisor)
@@ -71,7 +70,7 @@ class DroneController:
 
         poseMovido.position.x_val += distanciaPlano
         poseMovido.position.y_val += maxAncho
-        poseMovido.position.z_val += maxAlto
+        # poseMovido.position.z_val += maxAlto
 
         rot = Rotation.from_quat([poseVisor.orientation.x_val,
                                   poseVisor.orientation.y_val,
