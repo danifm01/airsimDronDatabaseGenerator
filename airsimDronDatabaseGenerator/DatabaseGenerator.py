@@ -2,7 +2,9 @@ import airsim
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-from imagesGenerator import ImagesGenerator
+
+from DroneController import DroneController
+from ImagesGenerator import ImagesGenerator
 
 
 # Devuelve el cliente de airsim para un multirotor
@@ -36,8 +38,11 @@ def teleportDron(dronName, client, pose=airsim.Pose()):
 
 
 def main():
-    generador = ImagesGenerator('Drone1', 'Drone2')
-    generador.teleportDron(0, 1, 1, -1, 1, 1, 1)
+    cliente = crearCliente()
+    dron1 = DroneController('Drone1', cliente)
+    dron2 = DroneController('Drone2', cliente)
+
+    generador = ImagesGenerator(dron1, dron2)
     # generador.tomarImagen(0)
     generador.tomarImagenesAleatorias(1)
     # client = crearCliente()
