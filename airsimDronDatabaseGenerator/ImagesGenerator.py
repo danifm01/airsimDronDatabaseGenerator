@@ -34,7 +34,8 @@ class ImagesGenerator:
             self.dron1.irAposeAleatoria()
             time.sleep(0.2)
             maxAncho, maxAlto, ancho, alto, poseMovido = (
-                self.dron2.moverAleatorioAcampoDeVision(self.dron1.nombre))
+                self.dron2.moverAleatorioAcampoDeVisionPolares(
+                    self.dron1.nombre))
             time.sleep(0.2)
             ima = self.dron1.tomarImagen()
             imagenes.append(ima)

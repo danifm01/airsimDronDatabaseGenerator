@@ -91,11 +91,14 @@ class DroneController:
         maxAlto = maxAncho / self.ratio
         return maxAncho, maxAlto
 
-    def calcularPoseRelativa(self, distancia, theta, rho, poseVisor):
+    @staticmethod
+    def calcularPoseRelativa(distancia, theta, phi, poseVisor):
         poseMovido = airsim.Pose(airsim.Vector3r(), airsim.Quaternionr())
-        poseMovido.position.x_val += distancia * np.sin(theta) * np.cos(rho)
-        poseMovido.position.y_val += distancia * np.sin(theta) * np.sin(rho)
-        poseMovido.position.z_val += distancia * np.cos(theta)
+        poseMovido.position.x_val += distancia * np.cos(np.radians(theta))
+        poseMovido.position.y_val += (distancia * np.sin(np.radians(theta)) *
+                                      np.cos(np.radians(phi)))
+        poseMovido.position.z_val += (distancia * np.sin(np.radians(theta)) *
+                                      np.sin(np.radians(phi)))
         rot = Rotation.from_quat([poseVisor.orientation.x_val,
                                   poseVisor.orientation.y_val,
                                   poseVisor.orientation.z_val,
@@ -108,7 +111,6 @@ class DroneController:
         poseMovido.position = airsim.Vector3r(nuevaPosition[0],
                                               nuevaPosition[1],
                                               nuevaPosition[2])
-        poseMovido = poseVisor
         return poseMovido
 
     # TODO: Definir posición aleatoria
