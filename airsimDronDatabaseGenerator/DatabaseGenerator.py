@@ -43,28 +43,7 @@ def main():
     dron2 = DroneController('Drone2', cliente)
 
     generador = ImagesGenerator(dron1, dron2)
-    # generador.tomarImagen(0)
-    generador.tomarImagenesAleatorias(1)
-    # client = crearCliente()
-    #
-    # teleportDron('Drone1', client,
-    #              airsim.Pose(airsim.Vector3r(3, 0, -0.5),
-    #                          airsim.to_quaternion(1, -1, 3.14 / 2)))
-    #
-    # imaBGR = tomarImagen(client, 'Drone1')
-    # mostrarImagen(imaBGR)
-    #
-    # imaBGR = tomarImagen(client, 'Drone2')
-    # mostrarImagen(imaBGR)
-
-    # client.takeoffAsync().join()
-    # client.moveToPositionAsync(-10, 10, -10, 5).join()
-    #
-    # imaBGR = tomarImagen(client)
-    # mostrarImagen(imaBGR)
-    #
-    # client.moveToPositionAsync(0, 0, 2, 5).join()
-    # client.landAsync().join()
+    generador.tomarImagenesAleatoriasConParametros(1)
 
 
 if __name__ == "__main__":
