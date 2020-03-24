@@ -17,7 +17,7 @@ class DroneController:
         # Parametros de la cámara
         self.anchoCamara = 1280  # Pixeles
         self.altoCamara = 720  # Pixeles
-        self.fovHorCamara = 90  # Grados
+        self.fovHorCamara = 90.  # Grados
         self.fovVerCamara = (self.fovHorCamara * self.altoCamara /
                              self.anchoCamara)  # Grados
         self.ratio = self.anchoCamara / self.altoCamara
@@ -35,12 +35,19 @@ class DroneController:
     # y roll entre -0.8 y 0.8 radianes y de yaw entre -pi y pi
     def irAposeAleatoria(self, x_max=10, x_min=-10, y_max=10, y_min=-10,
                          z_max=-1, z_min=-10):
+        # TODO: Borrar constantes de depuración
         x = random.uniform(x_min, x_max)
         y = random.uniform(y_min, y_max)
         z = random.uniform(z_min, z_max)
         pitch = random.uniform(-0.8, 0.8)
         roll = random.uniform(-0.8, 0.8)
         yaw = random.uniform(-np.pi, np.pi)
+        pitch = 0
+        roll = 0
+        yaw = 0
+        x = 0
+        y = 0
+        z = -5
         self.teleportDron(x, y, z, pitch, roll, yaw)
 
     # Devuelve una imagen de la escena en formato np array RGB uint8.
@@ -75,16 +82,19 @@ class DroneController:
     # El dron se moverá a una posición y orientación aleatoria dentro del
     # campo de visión del dronVisor.
     def moverAleatorioAcampoDeVisionPolares(self, dronVisor):
+        # TODO: Borrar constantes de depuración
         distancia = random.uniform(2, 10)
+        distancia = 10
         maxTheta = self.fovHorCamara / 2
-        maxRho = self.fovVerCamara / 2
+        maxPhi = self.fovVerCamara / 2
         poseVisor = self.client.simGetVehiclePose(dronVisor)
         theta = random.uniform(-maxTheta, maxTheta)
-        rho = random.uniform(-maxRho, maxRho)
-
-        poseMovido = self.calcularPoseRelativa(distancia, theta, rho, poseVisor)
+        phi = random.uniform(-maxPhi, maxPhi)
+        theta = 30
+        phi = -20
+        poseMovido = self.calcularPoseRelativa(distancia, theta, phi, poseVisor)
         self.client.simSetVehiclePose(poseMovido, True, self.nombre)
-        return maxTheta, maxRho, theta, rho, poseMovido
+        return maxTheta, maxPhi, theta, phi, distancia, poseMovido
 
     def calcularDesviacionMaxima(self, distanciaPlano):
         maxAncho = distanciaPlano * np.tan(np.radians(self.fovHorCamara / 2))
@@ -94,11 +104,17 @@ class DroneController:
     @staticmethod
     def calcularPoseRelativa(distancia, theta, phi, poseVisor):
         poseMovido = airsim.Pose(airsim.Vector3r(), airsim.Quaternionr())
-        poseMovido.position.x_val += distancia * np.cos(np.radians(theta))
-        poseMovido.position.y_val += (distancia * np.sin(np.radians(theta)) *
-                                      np.cos(np.radians(phi)))
-        poseMovido.position.z_val += (distancia * np.sin(np.radians(theta)) *
-                                      np.sin(np.radians(phi)))
+        # poseMovido.position.x_val += distancia * np.cos(np.radians(theta))
+        # poseMovido.position.y_val += (distancia * np.sin(np.radians(theta)) *
+        #                               np.cos(np.radians(phi)))
+        # poseMovido.position.z_val += (distancia * np.sin(np.radians(theta)) *
+        #                               np.sin(np.radians(phi)))
+        rot = Rotation.from_euler('ZYX', [theta, -phi, 0], True)
+        position = rot.apply([distancia, 0, 0])
+        poseMovido.position.x_val += position[0]
+        poseMovido.position.y_val += position[1]
+        poseMovido.position.z_val += position[2]
+
         rot = Rotation.from_quat([poseVisor.orientation.x_val,
                                   poseVisor.orientation.y_val,
                                   poseVisor.orientation.z_val,
@@ -139,5 +155,9 @@ class DroneController:
                                               nuevaPosition[2])
         return poseMovido, ancho, alto
 
+    def cameraInfo(self):
+        info = self.client.simGetCameraInfo("0")
+        pose = self.client.simGetVehiclePose(self.nombre)
+        return info
     # TODO: Crear metodo que devuelva los parámetros necesarios: ima, maxAncho,
     #  maxAlto, ancho, alto...
