@@ -1,4 +1,6 @@
+import copy
 import random
+import time
 
 import airsim
 import cv2
@@ -13,7 +15,7 @@ class DroneController:
 
         self.nombre = nombre
         self.pose = self.client.simGetVehiclePose(self.nombre)
-
+        self.cameraPosition = np.array([0.46, 0, 0])  # Metros
         # Parametros de la cámara
         self.anchoCamara = 1280  # Pixeles
         self.altoCamara = 720  # Pixeles
@@ -42,17 +44,31 @@ class DroneController:
         pitch = random.uniform(-0.8, 0.8)
         roll = random.uniform(-0.8, 0.8)
         yaw = random.uniform(-np.pi, np.pi)
-        pitch = 0
-        roll = 0
-        yaw = 0
-        x = 0
-        y = 0
-        z = -5
+        # pitch = 0.7
+        # roll = -0.5
+        # yaw = 0.2
+        # x = -34
+        # y = 5
+        # z = -5
         self.teleportDron(x, y, z, pitch, roll, yaw)
 
     # Devuelve una imagen de la escena en formato np array RGB uint8.
     # Si mostrar es True se imprime la imágen devuelta.
     def tomarImagen(self, mostrar=True):
+        # Coloca la cámara en la posición del dron
+        poseDronInicial = self.client.simGetVehiclePose(self.nombre)
+        rot = Rotation.from_quat([poseDronInicial.orientation.x_val,
+                                  poseDronInicial.orientation.y_val,
+                                  poseDronInicial.orientation.z_val,
+                                  poseDronInicial.orientation.w_val])
+        cameraPos = rot.apply(self.cameraPosition)
+        poseDronNueva = copy.deepcopy(poseDronInicial)
+        poseDronNueva.position.x_val -= cameraPos[0]
+        poseDronNueva.position.y_val -= cameraPos[1]
+        poseDronNueva.position.z_val -= cameraPos[2]
+        self.client.simSetVehiclePose(poseDronNueva, True, self.nombre)
+        time.sleep(0.5)
+        # Toma de imágenes
         responses = self.client.simGetImages(
             [airsim.ImageRequest("0", airsim.ImageType.Scene, False, False)],
             self.nombre)
@@ -63,6 +79,10 @@ class DroneController:
         if mostrar:
             plt.imshow(imaRGB)
             plt.show()
+
+        # Colocación del dron en la posición inicial
+        self.client.simSetVehiclePose(poseDronInicial, True, self.nombre)
+        time.sleep(0.5)
         return imaRGB
 
     # Entra como parámetro el nombre del dron cuyo campo de visión se utilizará.
@@ -84,15 +104,21 @@ class DroneController:
     def moverAleatorioAcampoDeVisionPolares(self, dronVisor):
         # TODO: Borrar constantes de depuración
         distancia = random.uniform(2, 10)
-        distancia = 10
+        # distancia = 10
         maxTheta = self.fovHorCamara / 2
         maxPhi = self.fovVerCamara / 2
         poseVisor = self.client.simGetVehiclePose(dronVisor)
         theta = random.uniform(-maxTheta, maxTheta)
         phi = random.uniform(-maxPhi, maxPhi)
-        theta = 30
-        phi = -20
+        # theta = maxTheta
+        # phi = 0
         poseMovido = self.calcularPoseRelativa(distancia, theta, phi, poseVisor)
+        # Se añade una rotación aleatoria al dron movido
+        pitch = random.uniform(-0.8, 0.8)
+        roll = random.uniform(-0.8, 0.8)
+        yaw = random.uniform(-np.pi, np.pi)
+        poseMovido.orientation = airsim.to_quaternion(pitch, roll, yaw)
+
         self.client.simSetVehiclePose(poseMovido, True, self.nombre)
         return maxTheta, maxPhi, theta, phi, distancia, poseMovido
 
@@ -109,7 +135,7 @@ class DroneController:
         #                               np.cos(np.radians(phi)))
         # poseMovido.position.z_val += (distancia * np.sin(np.radians(theta)) *
         #                               np.sin(np.radians(phi)))
-        rot = Rotation.from_euler('ZYX', [theta, -phi, 0], True)
+        rot = Rotation.from_euler('ZYX', [theta, phi, 0], True)
         position = rot.apply([distancia, 0, 0])
         poseMovido.position.x_val += position[0]
         poseMovido.position.y_val += position[1]
@@ -155,9 +181,5 @@ class DroneController:
                                               nuevaPosition[2])
         return poseMovido, ancho, alto
 
-    def cameraInfo(self):
-        info = self.client.simGetCameraInfo("0")
-        pose = self.client.simGetVehiclePose(self.nombre)
-        return info
     # TODO: Crear metodo que devuelva los parámetros necesarios: ima, maxAncho,
     #  maxAlto, ancho, alto...

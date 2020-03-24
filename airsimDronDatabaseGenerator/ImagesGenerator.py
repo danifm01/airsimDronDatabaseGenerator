@@ -41,8 +41,7 @@ class ImagesGenerator:
             maxTheta, maxPhi, theta, phi, distancia, poseMovido = (
                 self.dron2.moverAleatorioAcampoDeVisionPolares(
                     self.dron1.nombre))
-            time.sleep(0.2)
-            self.dron1.teleportDron(-0.46, 0, -5, 0, 0, 0)
+            # time.sleep(0.2)
             ima = self.dron1.tomarImagen(False)
             imagenes.append(ima)
             coordAncho, coordAlto = (
@@ -56,11 +55,10 @@ class ImagesGenerator:
 
     def calcularCoordenadasImagen(self, distancia, theta, phi):
         poseMovido = airsim.Pose(airsim.Vector3r(), airsim.Quaternionr())
-        rot = Rotation.from_euler('ZYX', [theta, -phi, 0], True)
+        rot = Rotation.from_euler('ZYX', [theta, phi, 0], True)
         position = rot.apply([distancia, 0, 0])
         # Ajustar sistemas de coordenadas
         position = np.array([[0, -1, 0], [0, 0, -1], [1, 0, 0]]).dot(position)
-        self.dron1.cameraInfo()
         cameraMatrix = np.array(
             [[-self.focal, 0, self.anchoCamara / 2],
              [0, -self.focal, self.altoCamara / 2],
@@ -87,8 +85,8 @@ class ImagesGenerator:
 
     @staticmethod
     def dibujarRadio(ima, radio, ancho, alto):
-        # img = cv2.circle(ima, (int(ancho), int(alto)), int(radio), (0, 255,
-        #                                                             0), 3)
+        img = cv2.circle(ima, (int(ancho), int(alto)), int(radio), (0, 255,
+                                                                    0), 3)
         img = cv2.circle(ima, (int(ancho), int(alto)), 5, (255, 0, 0), -1)
         plt.imshow(img)
         plt.show()
