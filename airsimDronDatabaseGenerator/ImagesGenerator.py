@@ -18,8 +18,8 @@ class ImagesGenerator:
         self.anchoCamara = 1280  # Pixeles
         self.altoCamara = 720  # Pixeles
         self.ratio = self.anchoCamara / self.altoCamara
-        self.focal = self.anchoCamara / 2 * (
-            np.tan(np.radians(self.fovCamara / 2))) ** (-1)  # distancia focal
+        self.focal = self.anchoCamara / 2 / (
+            np.tan(np.radians(self.fovCamara / 2)))  # distancia focal
 
     # Devuleve una lista de nImagenes del dron 2 visto desde el dron 1
     def tomarImagenesAleatorias(self, nImagenes):
@@ -68,11 +68,10 @@ class ImagesGenerator:
         imagePosition = imagePosition / imagePosition[2]
         return imagePosition[0], imagePosition[1]
 
-    # TODO: Modificar cálculo del radio para hacerlo a partir de la distancia
     # Determina el valor en pixeles que tiene un objeto en función de su
     # radio y su distancia
-    def calcularRadio(self, radioReal, maxAncho):
-        radio = radioReal * self.anchoCamara / maxAncho / 2
+    def calcularRadio(self, radioReal, distancia):
+        radio = radioReal * self.focal / distancia
         return radio
 
     # Dibuja una circunferencia verde en la imágen (ima) en la posición (alto y
