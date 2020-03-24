@@ -7,6 +7,8 @@ from matplotlib import pyplot as plt
 from scipy.spatial.transform import Rotation
 
 
+# Clase encargada de tomar imágenes de un drón en el simulador airsim a
+# partir de la cámara de otro drón.
 class ImagesGenerator:
     def __init__(self, DronController1, DronController2):
         self.dron1 = DronController1
@@ -38,23 +40,22 @@ class ImagesGenerator:
         for i in range(nImagenes):
             self.dron1.irAposeAleatoria()
             time.sleep(0.2)
-            maxTheta, maxPhi, theta, phi, distancia, poseMovido = (
+            theta, phi, distancia, poseMovido = (
                 self.dron2.moverAleatorioAcampoDeVisionPolares(
                     self.dron1.nombre))
             # time.sleep(0.2)
             ima = self.dron1.tomarImagen(False)
             imagenes.append(ima)
             coordAncho, coordAlto = (
-                self.calcularCoordenadasPolares(maxTheta, maxPhi, theta, phi))
-            coordAncho, coordAlto = (
                 self.calcularCoordenadasImagen(distancia, theta, phi))
-
             radioAncho = self.calcularRadio(np.sqrt(2) / 2, distancia)
             self.dibujarRadio(ima, radioAncho, coordAncho, coordAlto)
         return imagenes
 
+    # Devuelve la posición en la imágen en pixeles en la que se encuentra el
+    # objeto especificado por su distancia a la cámara y sus giros respecto a
+    # esta
     def calcularCoordenadasImagen(self, distancia, theta, phi):
-        poseMovido = airsim.Pose(airsim.Vector3r(), airsim.Quaternionr())
         rot = Rotation.from_euler('ZYX', [theta, phi, 0], True)
         position = rot.apply([distancia, 0, 0])
         # Ajustar sistemas de coordenadas
@@ -67,27 +68,21 @@ class ImagesGenerator:
         imagePosition = imagePosition / imagePosition[2]
         return imagePosition[0], imagePosition[1]
 
-    def calcularCoordenadasPolares(self, maxTheta, maxPhi, theta, phi):
-        coordAncho = (self.anchoCamara / 2 / maxTheta * theta +
-                      self.anchoCamara / 2)
-        coordAlto = self.altoCamara / 2 / maxPhi * phi + self.altoCamara / 2
-        return coordAncho, coordAlto
-
-    def calcularCoordenadas(self, maxAncho, maxAlto, ancho, alto):
-        coordAncho = (self.anchoCamara / 2 / maxAncho * ancho +
-                      self.anchoCamara / 2)
-        coordAlto = self.altoCamara / 2 / maxAlto * alto + self.altoCamara / 2
-        return coordAncho, coordAlto
-
+    # TODO: Modificar cálculo del radio para hacerlo a partir de la distancia
+    # Determina el valor en pixeles que tiene un objeto en función de su
+    # radio y su distancia
     def calcularRadio(self, radioReal, maxAncho):
         radio = radioReal * self.anchoCamara / maxAncho / 2
         return radio
 
+    # Dibuja una circunferencia verde en la imágen (ima) en la posición (alto y
+    # ancho) especificadas en pixeles y con el radio indicado en pixeles.
+    # Marca el centro de la circunfernecia mediante un punto rojo
     @staticmethod
     def dibujarRadio(ima, radio, ancho, alto):
-        img = cv2.circle(ima, (int(ancho), int(alto)), int(radio), (0, 255,
-                                                                    0), 3)
-        img = cv2.circle(ima, (int(ancho), int(alto)), 5, (255, 0, 0), -1)
+        img = ima.copy()
+        cv2.circle(img, (int(ancho), int(alto)), int(radio), (0, 255, 0), 3)
+        cv2.circle(img, (int(ancho), int(alto)), 5, (255, 0, 0), -1)
         plt.imshow(img)
         plt.show()
         return img

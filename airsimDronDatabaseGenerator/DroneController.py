@@ -120,7 +120,7 @@ class DroneController:
         poseMovido.orientation = airsim.to_quaternion(pitch, roll, yaw)
 
         self.client.simSetVehiclePose(poseMovido, True, self.nombre)
-        return maxTheta, maxPhi, theta, phi, distancia, poseMovido
+        return theta, phi, distancia, poseMovido
 
     def calcularDesviacionMaxima(self, distanciaPlano):
         maxAncho = distanciaPlano * np.tan(np.radians(self.fovHorCamara / 2))
