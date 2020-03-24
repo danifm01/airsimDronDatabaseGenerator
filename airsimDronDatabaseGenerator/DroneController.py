@@ -86,19 +86,6 @@ class DroneController:
         time.sleep(0.5)
         return imaRGB
 
-    # TODO: corregir la función
-    # Entra como parámetro el nombre del dron cuyo campo de visión se utilizará.
-    # El dron se moverá a una posición y orientación aleatoria dentro del
-    # campo de visión del dronVisor.
-    def moverAleatorioAcampoDeVision(self, dronVisor):
-        distanciaPlano = random.uniform(2, 10)
-        maxAncho, maxAlto = self.calcularDesviacionMaxima(distanciaPlano)
-        poseVisor = self.client.simGetVehiclePose(dronVisor)
-        poseMovido, ancho, alto = self.calcularPoseEnCampoDeVision(
-            distanciaPlano, maxAlto, maxAncho, poseVisor)
-        self.client.simSetVehiclePose(poseMovido, True, self.nombre)
-        return maxAncho, maxAlto, ancho, alto, poseMovido
-
     # Entra como parámetro el nombre del dron cuyo campo de visión se utilizará.
     # El dron se moverá a una posición y orientación aleatoria dentro del
     # campo de visión del dronVisor. Devuelve la distancia a la cámara,
@@ -126,11 +113,6 @@ class DroneController:
         self.client.simSetVehiclePose(poseMovido, True, self.nombre)
         return theta, phi, distancia, poseMovido
 
-    def calcularDesviacionMaxima(self, distanciaPlano):
-        maxAncho = distanciaPlano * np.tan(np.radians(self.fovHorCamara / 2))
-        maxAlto = maxAncho / self.ratio
-        return maxAncho, maxAlto
-
     # Cálcula la pose del dron en el sistema global a partir de las coordenadas
     # esféricas relativas al dronVisor
     @staticmethod
@@ -155,32 +137,6 @@ class DroneController:
                                               nuevaPosition[1],
                                               nuevaPosition[2])
         return poseMovido
-
-    # TODO: Definir posición aleatoria
-    @staticmethod
-    def calcularPoseEnCampoDeVision(distanciaPlano, maxAlto, maxAncho,
-                                    poseVisor):
-        poseMovido = airsim.Pose(airsim.Vector3r(), airsim.Quaternionr())
-        poseMovido.position.x_val += distanciaPlano
-        ancho = random.uniform(-maxAncho, maxAncho)
-        alto = random.uniform(-maxAlto, maxAlto)
-        # ancho = 0
-        # alto = 0
-        poseMovido.position.y_val += ancho
-        poseMovido.position.z_val += alto
-        rot = Rotation.from_quat([poseVisor.orientation.x_val,
-                                  poseVisor.orientation.y_val,
-                                  poseVisor.orientation.z_val,
-                                  poseVisor.orientation.w_val])
-        nuevaPosition = rot.apply([poseMovido.position.x_val,
-                                   poseMovido.position.y_val,
-                                   poseMovido.position.z_val])
-        nuevaPosition += [poseVisor.position.x_val, poseVisor.position.y_val,
-                          poseVisor.position.z_val]
-        poseMovido.position = airsim.Vector3r(nuevaPosition[0],
-                                              nuevaPosition[1],
-                                              nuevaPosition[2])
-        return poseMovido, ancho, alto
 
     # TODO: Crear metodo que devuelva los parámetros necesarios: ima, maxAncho,
     #  maxAlto, ancho, alto...
