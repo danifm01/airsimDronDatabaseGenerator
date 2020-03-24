@@ -9,14 +9,18 @@ from matplotlib import pyplot as plt
 from scipy.spatial.transform import Rotation
 
 
+# Clase encargada de controlar un dron en airsim
 class DroneController:
+    # Es necesario introducir el nombre del dron en airsim y el cliente de la
+    # conexión a airsim
     def __init__(self, nombre, client):
         self.client = client
 
         self.nombre = nombre
         self.pose = self.client.simGetVehiclePose(self.nombre)
-        self.cameraPosition = np.array([0.46, 0, 0])  # Metros
+
         # Parametros de la cámara
+        self.cameraPosition = np.array([0.46, 0, 0])  # Metros
         self.anchoCamara = 1280  # Pixeles
         self.altoCamara = 720  # Pixeles
         self.fovHorCamara = 90.  # Grados
@@ -25,7 +29,7 @@ class DroneController:
         self.ratio = self.anchoCamara / self.altoCamara
 
     # Mueve el dron a las coordenadas y con la orientación indicada como
-    # parámetro
+    # parámetro. Unidades en metros y radianes.
     def teleportDron(self, x, y, z, pitch, roll, yaw):
         self.pose.position = airsim.Vector3r(x, y, z)
         self.pose.orientation = airsim.to_quaternion(pitch, roll, yaw)
@@ -37,22 +41,18 @@ class DroneController:
     # y roll entre -0.8 y 0.8 radianes y de yaw entre -pi y pi
     def irAposeAleatoria(self, x_max=10, x_min=-10, y_max=10, y_min=-10,
                          z_max=-1, z_min=-10):
-        # TODO: Borrar constantes de depuración
         x = random.uniform(x_min, x_max)
         y = random.uniform(y_min, y_max)
         z = random.uniform(z_min, z_max)
         pitch = random.uniform(-0.8, 0.8)
         roll = random.uniform(-0.8, 0.8)
         yaw = random.uniform(-np.pi, np.pi)
-        # pitch = 0.7
-        # roll = -0.5
-        # yaw = 0.2
-        # x = -34
-        # y = 5
-        # z = -5
         self.teleportDron(x, y, z, pitch, roll, yaw)
 
-    # Devuelve una imagen de la escena en formato np array RGB uint8.
+    # Devuelve una imagen de la escena en formato np array RGB uint8. La
+    # imágen se toma colocando la cámara en la posición en la que se
+    # encuentra el drón con su misma orientación, sin tener en consideración la
+    # posición de la cámara relativa al dron.
     # Si mostrar es True se imprime la imágen devuelta.
     def tomarImagen(self, mostrar=True):
         # Coloca la cámara en la posición del dron
@@ -68,6 +68,7 @@ class DroneController:
         poseDronNueva.position.z_val -= cameraPos[2]
         self.client.simSetVehiclePose(poseDronNueva, True, self.nombre)
         time.sleep(0.5)
+
         # Toma de imágenes
         responses = self.client.simGetImages(
             [airsim.ImageRequest("0", airsim.ImageType.Scene, False, False)],
@@ -85,13 +86,13 @@ class DroneController:
         time.sleep(0.5)
         return imaRGB
 
+    # TODO: corregir la función
     # Entra como parámetro el nombre del dron cuyo campo de visión se utilizará.
     # El dron se moverá a una posición y orientación aleatoria dentro del
     # campo de visión del dronVisor.
     def moverAleatorioAcampoDeVision(self, dronVisor):
         distanciaPlano = random.uniform(2, 10)
         maxAncho, maxAlto = self.calcularDesviacionMaxima(distanciaPlano)
-
         poseVisor = self.client.simGetVehiclePose(dronVisor)
         poseMovido, ancho, alto = self.calcularPoseEnCampoDeVision(
             distanciaPlano, maxAlto, maxAncho, poseVisor)
@@ -100,9 +101,12 @@ class DroneController:
 
     # Entra como parámetro el nombre del dron cuyo campo de visión se utilizará.
     # El dron se moverá a una posición y orientación aleatoria dentro del
-    # campo de visión del dronVisor.
+    # campo de visión del dronVisor. Devuelve la distancia a la cámara,
+    # los valores de los ángulos relativos a ella y la pose a la que se mueve
+    # el dron.
     def moverAleatorioAcampoDeVisionPolares(self, dronVisor):
-        # TODO: Borrar constantes de depuración
+        # TODO: Borrar constantes de depuración y crear una función para
+        #  mover de forma determinista a una posición relativa al dronVisor
         distancia = random.uniform(2, 10)
         # distancia = 10
         maxTheta = self.fovHorCamara / 2
@@ -127,14 +131,11 @@ class DroneController:
         maxAlto = maxAncho / self.ratio
         return maxAncho, maxAlto
 
+    # Cálcula la pose del dron en el sistema global a partir de las coordenadas
+    # esféricas relativas al dronVisor
     @staticmethod
     def calcularPoseRelativa(distancia, theta, phi, poseVisor):
         poseMovido = airsim.Pose(airsim.Vector3r(), airsim.Quaternionr())
-        # poseMovido.position.x_val += distancia * np.cos(np.radians(theta))
-        # poseMovido.position.y_val += (distancia * np.sin(np.radians(theta)) *
-        #                               np.cos(np.radians(phi)))
-        # poseMovido.position.z_val += (distancia * np.sin(np.radians(theta)) *
-        #                               np.sin(np.radians(phi)))
         rot = Rotation.from_euler('ZYX', [theta, phi, 0], True)
         position = rot.apply([distancia, 0, 0])
         poseMovido.position.x_val += position[0]

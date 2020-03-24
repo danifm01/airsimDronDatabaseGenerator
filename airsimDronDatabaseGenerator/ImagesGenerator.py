@@ -1,8 +1,7 @@
 import time
 
-import airsim
-import numpy as np
 import cv2
+import numpy as np
 from matplotlib import pyplot as plt
 from scipy.spatial.transform import Rotation
 
