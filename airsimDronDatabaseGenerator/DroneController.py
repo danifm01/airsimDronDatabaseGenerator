@@ -91,7 +91,7 @@ class DroneController:
     # campo de visión del dronVisor. Devuelve la distancia a la cámara,
     # los valores de los ángulos relativos a ella y la pose a la que se mueve
     # el dron.
-    def moverAleatorioAcampoDeVisionPolares(self, dronVisor):
+    def moverAleatorioAcampoDeVision(self, dronVisor):
         # TODO: Borrar constantes de depuración y crear una función para
         #  mover de forma determinista a una posición relativa al dronVisor
         distancia = random.uniform(2, 10)

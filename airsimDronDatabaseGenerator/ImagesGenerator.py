@@ -26,7 +26,7 @@ class ImagesGenerator:
         for i in range(nImagenes):
             self.dron1.irAposeAleatoria()
             time.sleep(0.2)
-            self.dron2.moverAleatorioAcampoDeVisionPolares(self.dron1.nombre)
+            self.dron2.moverAleatorioAcampoDeVision(self.dron1.nombre)
             time.sleep(0.2)
             imagenes.append(self.dron1.tomarImagen())
         return imagenes
@@ -40,7 +40,7 @@ class ImagesGenerator:
             self.dron1.irAposeAleatoria()
             time.sleep(0.2)
             theta, phi, distancia, poseMovido = (
-                self.dron2.moverAleatorioAcampoDeVisionPolares(
+                self.dron2.moverAleatorioAcampoDeVision(
                     self.dron1.nombre))
             # time.sleep(0.2)
             ima = self.dron1.tomarImagen(False)
