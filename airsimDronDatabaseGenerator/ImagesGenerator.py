@@ -9,9 +9,10 @@ from scipy.spatial.transform import Rotation
 # Clase encargada de tomar imágenes de un drón en el simulador airsim a
 # partir de la cámara de otro drón.
 class ImagesGenerator:
-    def __init__(self, DronController1, DronController2):
-        self.dron1 = DronController1
-        self.dron2 = DronController2
+    def __init__(self, DronControllerVisor, DronControllerVisto, dataCalc):
+        self.dron1 = DronControllerVisor
+        self.dron2 = DronControllerVisto
+        self.dataCalculator = dataCalc
         # Parametros de la cámara
         self.fovCamara = 90  # Grados
         self.anchoCamara = 1280  # Pixeles
@@ -33,23 +34,34 @@ class ImagesGenerator:
 
     # TODO: Añadir cálculo de parámetros distReal (m), orientación coordAncho
     #  (pixel), coordAlto (pixel), Radio (pixel) y ¿Bounding Box? al método
-    # Devuleve una lista de nImagenes del dron 2 visto desde el dron 1
+    # Devuleve una lista de nImagenes del dron 2 visto desde el dron 1,
+    # otra lista con las mismas imágenes marcado donde se encuentra el dron 2
+    # y una lista de listas en la que se encuentran los parámetros de cada
+    # imágen tomada.
     def tomarImagenesAleatoriasConParametros(self, nImagenes):
         imagenes = []
+        imagenesMarcadas = []
+        parametros = []
         for i in range(nImagenes):
             self.dron1.irAposeAleatoria()
             time.sleep(0.2)
             theta, phi, distancia, poseMovido = (
                 self.dron2.moverAleatorioAcampoDeVision(
                     self.dron1.nombre))
+            theta, phi, distancia, poseMovido = (
+                self.dron2.moverRelativoAcampoDeVision(self.dron1.nombre, 3,
+                                                       0.4, 0.1))
+
             # time.sleep(0.2)
             ima = self.dron1.tomarImagen(False)
             imagenes.append(ima)
             coordAncho, coordAlto = (
                 self.calcularCoordenadasImagen(distancia, theta, phi))
             radioAncho = self.calcularRadio(np.sqrt(2) / 2, distancia)
-            self.dibujarRadio(ima, radioAncho, coordAncho, coordAlto)
-        return imagenes
+            imagenesMarcadas.append(self.dibujarRadio(ima, radioAncho,
+                                                      coordAncho, coordAlto))
+            parametros.append(self.dataCalculator.calcularParametros())
+        return imagenes, imagenesMarcadas, parametros
 
     # Devuelve la posición en la imágen en pixeles en la que se encuentra el
     # objeto especificado por su distancia a la cámara y sus giros respecto a

@@ -5,6 +5,7 @@ import numpy as np
 
 from DroneController import DroneController
 from ImagesGenerator import ImagesGenerator
+from DataCalculator import DataCalculator
 
 
 # Devuelve el cliente de airsim para un multirotor
@@ -39,11 +40,14 @@ def teleportDron(dronName, client, pose=airsim.Pose()):
 
 def main():
     cliente = crearCliente()
+
     dron1 = DroneController('Drone1', cliente)
     dron2 = DroneController('Drone2', cliente)
+    dataCalc = DataCalculator(cliente, 'Drone1', 'Drone2')
 
-    generador = ImagesGenerator(dron1, dron2)
-    generador.tomarImagenesAleatoriasConParametros(1)
+    generador = ImagesGenerator(dron1, dron2, dataCalc)
+    imagenes, imagenesMarcadas, parametros = (
+        generador.tomarImagenesAleatoriasConParametros(1))
 
 
 if __name__ == "__main__":
