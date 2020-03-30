@@ -92,17 +92,28 @@ class DroneController:
     # los valores de los ángulos relativos a ella y la pose a la que se mueve
     # el dron.
     def moverAleatorioAcampoDeVision(self, dronVisor):
-        # TODO: Borrar constantes de depuración y crear una función para
-        #  mover de forma determinista a una posición relativa al dronVisor
         distancia = random.uniform(2, 10)
-        # distancia = 10
         maxTheta = self.fovHorCamara / 2
         maxPhi = self.fovVerCamara / 2
         poseVisor = self.client.simGetVehiclePose(dronVisor)
         theta = random.uniform(-maxTheta, maxTheta)
         phi = random.uniform(-maxPhi, maxPhi)
-        # theta = maxTheta
-        # phi = 0
+        poseMovido = self.calcularPoseRelativa(distancia, theta, phi, poseVisor)
+        # Se añade una rotación aleatoria al dron movido
+        pitch = random.uniform(-0.8, 0.8)
+        roll = random.uniform(-0.8, 0.8)
+        yaw = random.uniform(-np.pi, np.pi)
+        poseMovido.orientation = airsim.to_quaternion(pitch, roll, yaw)
+
+        self.client.simSetVehiclePose(poseMovido, True, self.nombre)
+        return theta, phi, distancia, poseMovido
+
+    # Mueve el dron a una posición relativa a la de otro dron. Entran como
+    # parámetros el nombre del dron que se usará de referencia, la distancia
+    # en metros a la que se colocará el dron y los ángulos theta y phi en
+    # radianes que determinan la posición en coordenadas esféricas.
+    def moverRelativoAcampoDeVision(self, dronVisor, distancia, theta, phi):
+        poseVisor = self.client.simGetVehiclePose(dronVisor)
         poseMovido = self.calcularPoseRelativa(distancia, theta, phi, poseVisor)
         # Se añade una rotación aleatoria al dron movido
         pitch = random.uniform(-0.8, 0.8)
