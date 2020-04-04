@@ -1,5 +1,5 @@
 import numpy as np
-from transforms3d.quaternions import quat2mat
+from scipy.spatial.transform import Rotation
 
 
 class DataCalculator:
@@ -9,22 +9,37 @@ class DataCalculator:
         self.dronVisto = dronVisto
         self.poseVisor = None
         self.poseVisto = None
+        # Parametros de la cámara
+        self.fovCamara = 90  # Grados
+        self.anchoCamara = 1280  # Pixeles
+        self.altoCamara = 720  # Pixeles
+        self.ratio = self.anchoCamara / self.altoCamara
+        self.focal = self.anchoCamara / 2 / (
+            np.tan(np.radians(self.fovCamara / 2)))  # distancia focal
         self.updatePose()
 
     def updatePose(self):
         self.poseVisor = self.client.simGetVehiclePose(self.dronVisor)
         self.poseVisto = self.client.simGetVehiclePose(self.dronVisto)
 
-    def calcularDistancia(self):
+    def calcularDistancia(self, updatePose=True):
+        if updatePose:
+            self.updatePose()
         return self.poseVisor.position.distance_to(self.poseVisto.position)
 
-    def orientacionAbsolutaVisor(self):
+    def orientacionAbsolutaVisor(self, updatePose=True):
+        if updatePose:
+            self.updatePose()
         return self.poseVisor.orientation
 
-    def orientacionAbsolutaVisto(self):
+    def orientacionAbsolutaVisto(self, updatePose=True):
+        if updatePose:
+            self.updatePose()
         return self.poseVisto.orientation
 
-    def orientacionRelativaVisto(self):
+    def orientacionRelativaVisto(self, updatePose=True):
+        if updatePose:
+            self.updatePose()
         qr1 = self.poseVisto.orientation.w_val
         qx1 = self.poseVisto.orientation.x_val
         qy1 = self.poseVisto.orientation.y_val
@@ -40,6 +55,24 @@ class DataCalculator:
         y_quat = qr1 * qy2 + qr2 * qy1 + qz1 * qx2 - qz2 * qx1
         z_quat = qr1 * qz2 + qr2 * qz1 + qx1 * qy2 - qx2 * qy1
         return w_quat, x_quat, y_quat, z_quat
+
+    # Devuelve la posición en la imágen en pixeles en la que se encuentra el
+    # objeto especificado por su distancia a la cámara y sus giros respecto a
+    # esta
+    def calcularCoordenadasImagen(self, distancia, theta, phi, updatePose=True):
+        if updatePose:
+            self.updatePose()
+        rot = Rotation.from_euler('ZYX', [phi, theta, 0], True)
+        position = rot.apply([distancia, 0, 0])
+        # Ajustar sistemas de coordenadas
+        position = np.array([[0, -1, 0], [0, 0, -1], [1, 0, 0]]).dot(position)
+        cameraMatrix = np.array(
+            [[-self.focal, 0, self.anchoCamara / 2],
+             [0, -self.focal, self.altoCamara / 2],
+             [0, 0, 1]])
+        imagePosition = cameraMatrix.dot(position.T)
+        imagePosition = imagePosition / imagePosition[2]
+        return imagePosition[0], imagePosition[1]
 
     def calcularParametros(self):
         pass

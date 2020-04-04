@@ -57,29 +57,14 @@ class ImagesGenerator:
             ima = self.dron1.tomarImagen(False)
             imagenes.append(ima)
             coordAncho, coordAlto = (
-                self.calcularCoordenadasImagen(distancia, theta, phi))
+                self.dataCalculator.calcularCoordenadasImagen(distancia, theta,
+                                                              phi))
             radioAncho = self.calcularRadio(np.sqrt(2) / 2, distancia)
             imagenesMarcadas.append(self.dibujarRadio(ima, radioAncho,
                                                       coordAncho, coordAlto))
 
             parametros.append(self.dataCalculator.calcularParametros())
         return imagenes, imagenesMarcadas, parametros
-
-    # Devuelve la posición en la imágen en pixeles en la que se encuentra el
-    # objeto especificado por su distancia a la cámara y sus giros respecto a
-    # esta
-    def calcularCoordenadasImagen(self, distancia, theta, phi):
-        rot = Rotation.from_euler('ZYX', [phi, theta, 0], True)
-        position = rot.apply([distancia, 0, 0])
-        # Ajustar sistemas de coordenadas
-        position = np.array([[0, -1, 0], [0, 0, -1], [1, 0, 0]]).dot(position)
-        cameraMatrix = np.array(
-            [[-self.focal, 0, self.anchoCamara / 2],
-             [0, -self.focal, self.altoCamara / 2],
-             [0, 0, 1]])
-        imagePosition = cameraMatrix.dot(position.T)
-        imagePosition = imagePosition / imagePosition[2]
-        return imagePosition[0], imagePosition[1]
 
     # Determina el valor en pixeles que tiene un objeto en función de su
     # radio y su distancia
