@@ -74,5 +74,11 @@ class DataCalculator:
         imagePosition = imagePosition / imagePosition[2]
         return imagePosition[0], imagePosition[1]
 
+    # Determina el valor en pixeles que tiene un objeto en función de su
+    # radio real y su distancia a la cámara
+    def calcularRadio(self, radioReal, distancia):
+        radio = radioReal * self.focal / distancia
+        return radio
+
     def calcularParametros(self):
         pass

@@ -59,18 +59,13 @@ class ImagesGenerator:
             coordAncho, coordAlto = (
                 self.dataCalculator.calcularCoordenadasImagen(distancia, theta,
                                                               phi))
-            radioAncho = self.calcularRadio(np.sqrt(2) / 2, distancia)
+            radioAncho = self.dataCalculator.calcularRadio(np.sqrt(2) / 2,
+                                                           distancia)
             imagenesMarcadas.append(self.dibujarRadio(ima, radioAncho,
                                                       coordAncho, coordAlto))
 
             parametros.append(self.dataCalculator.calcularParametros())
         return imagenes, imagenesMarcadas, parametros
-
-    # Determina el valor en pixeles que tiene un objeto en función de su
-    # radio y su distancia
-    def calcularRadio(self, radioReal, distancia):
-        radio = radioReal * self.focal / distancia
-        return radio
 
     # Dibuja una circunferencia verde en la imágen (ima) en la posición (alto y
     # ancho) especificadas en pixeles y con el radio indicado en pixeles.
