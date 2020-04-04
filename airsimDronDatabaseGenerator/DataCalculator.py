@@ -54,7 +54,7 @@ class DataCalculator:
         x_quat = qr1 * qx2 + qr2 * qx1 + qy1 * qz2 - qy2 * qz1
         y_quat = qr1 * qy2 + qr2 * qy1 + qz1 * qx2 - qz2 * qx1
         z_quat = qr1 * qz2 + qr2 * qz1 + qx1 * qy2 - qx2 * qy1
-        return w_quat, x_quat, y_quat, z_quat
+        return [w_quat, x_quat, y_quat, z_quat]
 
     # Devuelve la posición en la imágen en pixeles en la que se encuentra el
     # objeto especificado por su distancia a la cámara y sus giros respecto a
@@ -80,5 +80,13 @@ class DataCalculator:
         radio = radioReal * self.focal / distancia
         return radio
 
-    def calcularParametros(self):
-        pass
+    def calcularParametros(self, distancia, theta, phi):
+        self.updatePose()
+        xIma, yIma = self.calcularCoordenadasImagen(distancia, theta, phi,
+                                                    False)
+        radioIma = self.calcularRadio(np.sqrt(2) / 2, distancia)
+        orientacionVisor = self.orientacionAbsolutaVisor(False)
+        orientacionVisto = self.orientacionAbsolutaVisto(False)
+        orientacionRelativa = self.orientacionRelativaVisto(False)
+        return [distancia, phi, theta, xIma, yIma, radioIma, orientacionVisor,
+                orientacionVisto, orientacionRelativa]

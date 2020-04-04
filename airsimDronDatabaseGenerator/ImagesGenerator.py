@@ -50,7 +50,8 @@ class ImagesGenerator:
             imagenesMarcadas.append(self.dibujarRadio(ima, radioAncho,
                                                       coordAncho, coordAlto))
 
-            parametros.append(self.dataCalculator.calcularParametros())
+            parametros.append(self.dataCalculator.calcularParametros(
+                distancia, theta, phi))
         return imagenes, imagenesMarcadas, parametros
 
     # Dibuja una circunferencia verde en la imágen (ima) en la posición (alto y
