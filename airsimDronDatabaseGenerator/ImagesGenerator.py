@@ -3,7 +3,6 @@ import time
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
-from scipy.spatial.transform import Rotation
 
 
 # Clase encargada de tomar imágenes de un drón en el simulador airsim a
@@ -13,13 +12,6 @@ class ImagesGenerator:
         self.dron1 = DronControllerVisor
         self.dron2 = DronControllerVisto
         self.dataCalculator = dataCalc
-        # Parametros de la cámara
-        self.fovCamara = 90  # Grados
-        self.anchoCamara = 1280  # Pixeles
-        self.altoCamara = 720  # Pixeles
-        self.ratio = self.anchoCamara / self.altoCamara
-        self.focal = self.anchoCamara / 2 / (
-            np.tan(np.radians(self.fovCamara / 2)))  # distancia focal
 
     # Devuleve una lista de nImagenes del dron 2 visto desde el dron 1
     def tomarImagenesAleatorias(self, nImagenes):
@@ -48,12 +40,6 @@ class ImagesGenerator:
             theta, phi, distancia, poseMovido = (
                 self.dron2.moverAleatorioAcampoDeVision(
                     self.dron1.nombre))
-            # theta, phi, distancia, poseMovido = (
-            #     self.dron2.moverRelativoAcampoDeVision(self.dron1.nombre, 3,
-            #                                            0.4, 0.1, -0.1, -0.5,
-            #                                            0.3))
-
-            # time.sleep(0.2)
             ima = self.dron1.tomarImagen(False)
             imagenes.append(ima)
             coordAncho, coordAlto = (
