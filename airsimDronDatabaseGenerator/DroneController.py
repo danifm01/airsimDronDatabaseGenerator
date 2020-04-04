@@ -49,6 +49,9 @@ class DroneController:
         yaw = random.uniform(-np.pi, np.pi)
         self.teleportDron(x, y, z, pitch, roll, yaw)
 
+    def getPose(self):
+        self.pose = self.client.simGetVehiclePose(self.nombre)
+        return self.pose
     # Devuelve una imagen de la escena en formato np array RGB uint8. La
     # imágen se toma colocando la cámara en la posición en la que se
     # encuentra el drón con su misma orientación, sin tener en consideración la
@@ -112,13 +115,17 @@ class DroneController:
     # parámetros el nombre del dron que se usará de referencia, la distancia
     # en metros a la que se colocará el dron y los ángulos theta y phi en
     # radianes que determinan la posición en coordenadas esféricas.
-    def moverRelativoAcampoDeVision(self, dronVisor, distancia, theta, phi):
+    def moverRelativoAcampoDeVision(self, dronVisor, distancia, theta, phi,
+                                    pitch=None, roll=None, yaw=None):
         poseVisor = self.client.simGetVehiclePose(dronVisor)
         poseMovido = self.calcularPoseRelativa(distancia, theta, phi, poseVisor)
         # Se añade una rotación aleatoria al dron movido
-        pitch = random.uniform(-0.8, 0.8)
-        roll = random.uniform(-0.8, 0.8)
-        yaw = random.uniform(-np.pi, np.pi)
+        if pitch is None:
+            pitch = random.uniform(-0.8, 0.8)
+        if roll is None:
+            roll = random.uniform(-0.8, 0.8)
+        if yaw is None:
+            yaw = random.uniform(-np.pi, np.pi)
         poseMovido.orientation = airsim.to_quaternion(pitch, roll, yaw)
 
         self.client.simSetVehiclePose(poseMovido, True, self.nombre)

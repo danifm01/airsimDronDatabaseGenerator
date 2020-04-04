@@ -44,13 +44,16 @@ class ImagesGenerator:
         parametros = []
         for i in range(nImagenes):
             self.dron1.irAposeAleatoria()
+            # TODO: eliminar comprobación
+            self.dron1.teleportDron(0, 0, 0, 0., 0., -0.)
             time.sleep(0.2)
-            theta, phi, distancia, poseMovido = (
-                self.dron2.moverAleatorioAcampoDeVision(
-                    self.dron1.nombre))
+            # theta, phi, distancia, poseMovido = (
+            #     self.dron2.moverAleatorioAcampoDeVision(
+            #         self.dron1.nombre))
             theta, phi, distancia, poseMovido = (
                 self.dron2.moverRelativoAcampoDeVision(self.dron1.nombre, 3,
-                                                       0.4, 0.1))
+                                                       0.4, 0.1, -0.1, -0.5,
+                                                       0.3))
 
             # time.sleep(0.2)
             ima = self.dron1.tomarImagen(False)
@@ -60,6 +63,13 @@ class ImagesGenerator:
             radioAncho = self.calcularRadio(np.sqrt(2) / 2, distancia)
             imagenesMarcadas.append(self.dibujarRadio(ima, radioAncho,
                                                       coordAncho, coordAlto))
+
+            # TODO: Borrar comprobación
+            self.dataCalculator.updatePose()
+            orientacion = self.dataCalculator.orientacionRelativaVisto()
+            pose1 = self.dron1.getPose()
+            pose2 = self.dron2.getPose()
+
             parametros.append(self.dataCalculator.calcularParametros())
         return imagenes, imagenesMarcadas, parametros
 
