@@ -52,6 +52,7 @@ class DroneController:
     def getPose(self):
         self.pose = self.client.simGetVehiclePose(self.nombre)
         return self.pose
+
     # Devuelve una imagen de la escena en formato np array RGB uint8. La
     # imágen se toma colocando la cámara en la posición en la que se
     # encuentra el drón con su misma orientación, sin tener en consideración la
@@ -96,8 +97,8 @@ class DroneController:
     # el dron.
     def moverAleatorioAcampoDeVision(self, dronVisor):
         distancia = random.uniform(2, 10)
-        maxTheta = self.fovHorCamara / 2
-        maxPhi = self.fovVerCamara / 2
+        maxPhi = self.fovHorCamara / 2
+        maxTheta = self.fovVerCamara / 2
         poseVisor = self.client.simGetVehiclePose(dronVisor)
         theta = random.uniform(-maxTheta, maxTheta)
         phi = random.uniform(-maxPhi, maxPhi)
@@ -136,7 +137,7 @@ class DroneController:
     @staticmethod
     def calcularPoseRelativa(distancia, theta, phi, poseVisor):
         poseMovido = airsim.Pose(airsim.Vector3r(), airsim.Quaternionr())
-        rot = Rotation.from_euler('ZYX', [theta, phi, 0], True)
+        rot = Rotation.from_euler('ZYX', [phi, theta, 0], True)
         position = rot.apply([distancia, 0, 0])
         poseMovido.position.x_val += position[0]
         poseMovido.position.y_val += position[1]

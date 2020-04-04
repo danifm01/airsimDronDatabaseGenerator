@@ -69,7 +69,7 @@ class ImagesGenerator:
     # objeto especificado por su distancia a la cámara y sus giros respecto a
     # esta
     def calcularCoordenadasImagen(self, distancia, theta, phi):
-        rot = Rotation.from_euler('ZYX', [theta, phi, 0], True)
+        rot = Rotation.from_euler('ZYX', [phi, theta, 0], True)
         position = rot.apply([distancia, 0, 0])
         # Ajustar sistemas de coordenadas
         position = np.array([[0, -1, 0], [0, 0, -1], [1, 0, 0]]).dot(position)
