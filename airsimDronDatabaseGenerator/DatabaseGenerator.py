@@ -6,7 +6,7 @@ import numpy as np
 from DroneController import DroneController
 from ImagesGenerator import ImagesGenerator
 from DataCalculator import DataCalculator
-
+from DataOrganizer import DataOrganizer
 
 # Devuelve el cliente de airsim para un multirotor
 def crearCliente():
@@ -48,6 +48,7 @@ def main():
     generador = ImagesGenerator(dron1, dron2, dataCalc)
     imagenes, imagenesMarcadas, parametros = (
         generador.tomarImagenesAleatoriasConParametros(1))
+    organizador = DataOrganizer(imagenes, imagenesMarcadas, parametros)
 
 
 if __name__ == "__main__":
