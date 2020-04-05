@@ -1,4 +1,7 @@
 import pandas as pd
+import numpy as np
+import cv2
+import os
 
 
 class DataOrganizer:
@@ -30,3 +33,19 @@ class DataOrganizer:
         self.addImagenes(imagenes)
         self.addImagenesMarcadas(imagenesMarcadas)
         self.addParametros(parametros)
+
+    def crearDataFrame(self):
+        nombres = []
+        for index, ima in enumerate(self.imagenes):
+            nombre = 'Imagen ' + str(index) + '.jpg'
+            cv2.imwrite(
+                os.path.join(os.path.dirname(__file__), 'Imagenes\\') + nombre,
+                ima)
+            nombres.append(nombre)
+        data = pd.DataFrame(np.array(self.parametros),
+                            columns=['distancia', 'phi', 'theta', 'xIma',
+                                     'yIma', 'radioIma', 'orientacionVisor',
+                                     'orientacionVisto',
+                                     'orientacionRelativa'])
+        data.insert(0, 'nombre', nombres)
+        return data
