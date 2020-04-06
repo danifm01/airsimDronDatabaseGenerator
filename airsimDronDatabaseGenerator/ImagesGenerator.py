@@ -30,7 +30,7 @@ class ImagesGenerator:
     # otra lista con las mismas imágenes marcado donde se encuentra el dron 2
     # y una lista de listas en la que se encuentran los parámetros de cada
     # imágen tomada.
-    def tomarImagenesAleatoriasConParametros(self, nImagenes):
+    def tomarImagenesAleatoriasConParametros(self, nImagenes, mostrarImagen=True):
         imagenes = []
         imagenesMarcadas = []
         parametros = []
@@ -48,7 +48,8 @@ class ImagesGenerator:
             radioAncho = self.dataCalculator.calcularRadio(np.sqrt(2) / 2,
                                                            distancia)
             imagenesMarcadas.append(self.dibujarRadio(ima, radioAncho,
-                                                      coordAncho, coordAlto))
+                                                      coordAncho, coordAlto,
+                                                      mostrarImagen))
 
             parametros.append(self.dataCalculator.calcularParametros(
                 distancia, theta, phi))
@@ -58,10 +59,11 @@ class ImagesGenerator:
     # ancho) especificadas en pixeles y con el radio indicado en pixeles.
     # Marca el centro de la circunfernecia mediante un punto rojo
     @staticmethod
-    def dibujarRadio(ima, radio, ancho, alto):
+    def dibujarRadio(ima, radio, ancho, alto, mostrar=True):
         img = ima.copy()
         cv2.circle(img, (int(ancho), int(alto)), int(radio), (0, 255, 0), 3)
         cv2.circle(img, (int(ancho), int(alto)), 5, (255, 0, 0), -1)
-        plt.imshow(img)
-        plt.show()
+        if mostrar:
+            plt.imshow(img)
+            plt.show()
         return img
