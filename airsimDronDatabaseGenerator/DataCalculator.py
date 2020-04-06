@@ -55,7 +55,7 @@ class DataCalculator:
         x_quat = qr1 * qx2 + qr2 * qx1 + qy1 * qz2 - qy2 * qz1
         y_quat = qr1 * qy2 + qr2 * qy1 + qz1 * qx2 - qz2 * qx1
         z_quat = qr1 * qz2 + qr2 * qz1 + qx1 * qy2 - qx2 * qy1
-        return airsim.Quaternionr(w_quat, x_quat, y_quat, z_quat)
+        return airsim.Quaternionr(x_quat, y_quat, z_quat, w_quat)
 
     # Devuelve la posición en la imágen en pixeles en la que se encuentra el
     # objeto especificado por su distancia a la cámara y sus giros respecto a
