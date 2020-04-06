@@ -34,18 +34,41 @@ class DataOrganizer:
         self.addImagenesMarcadas(imagenesMarcadas)
         self.addParametros(parametros)
 
-    def crearDataFrame(self):
+    def crearDataBase(self):
         nombres = []
+        dirName = self.crearDirectorio('Data\\Imagenes')
+
         for index, ima in enumerate(self.imagenes):
-            nombre = 'Imagen ' + str(index) + '.jpg'
-            cv2.imwrite(
-                os.path.join(os.path.dirname(__file__), 'Imagenes\\') + nombre,
-                ima)
+            nombre = str(index) + '_Imagen_Blocks' + '.jpg'
+            imaBGR = cv2.cvtColor(ima, cv2.COLOR_RGB2BGR)
+            cv2.imwrite(os.path.join(dirName, nombre), imaBGR)
             nombres.append(nombre)
+
+        dirName = self.crearDirectorio('Data\\ImagenesMarcadas')
+        for index, ima in enumerate(self.imagenesMarcadas):
+            nombre = str(index) + '_Imagen_Marcada_Blocks' + '.jpg'
+            imaBGR = cv2.cvtColor(ima, cv2.COLOR_RGB2BGR)
+            cv2.imwrite(os.path.join(dirName, nombre), imaBGR)
+
         data = pd.DataFrame(np.array(self.parametros),
                             columns=['distancia', 'phi', 'theta', 'xIma',
                                      'yIma', 'radioIma', 'orientacionVisor',
                                      'orientacionVisto',
                                      'orientacionRelativa'])
         data.insert(0, 'nombre', nombres)
+        dirName = self.crearDirectorio('Data\\Parametros')
+        data.to_csv(os.path.join(dirName, 'Parametros.csv'), index=False)
         return data
+
+    @staticmethod
+    def crearDirectorio(ruta: str):
+        dirName = os.path.dirname(__file__)
+        dirName = dirName[:dirName.rfind('\\')]
+        for directorio in ruta.split('\\'):
+            dirName = os.path.join(dirName, directorio)
+            if not os.path.exists(dirName):
+                os.mkdir(dirName)
+                print("Directory ", dirName, " Created ")
+            else:
+                print("Directory ", dirName, " already exists")
+        return dirName

@@ -49,7 +49,7 @@ def main():
     imagenes, imagenesMarcadas, parametros = (
         generador.tomarImagenesAleatoriasConParametros(2))
     organizador = DataOrganizer(imagenes, imagenesMarcadas, parametros)
-    organizador.crearDataFrame()
+    organizador.crearDataBase()
 
 
 if __name__ == "__main__":
