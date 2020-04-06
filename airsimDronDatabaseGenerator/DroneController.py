@@ -71,7 +71,7 @@ class DroneController:
         poseDronNueva.position.y_val -= cameraPos[1]
         poseDronNueva.position.z_val -= cameraPos[2]
         self.client.simSetVehiclePose(poseDronNueva, True, self.nombre)
-        time.sleep(0.5)
+        time.sleep(0.2)
 
         # Toma de imágenes
         responses = self.client.simGetImages(
@@ -157,5 +157,12 @@ class DroneController:
                                               nuevaPosition[2])
         return poseMovido
 
-    # TODO: Crear metodo que devuelva los parámetros necesarios: ima, maxAncho,
-    #  maxAlto, ancho, alto...
+    def comprobarPoseCorrecta(self):
+        self.pose = self.client.simGetVehiclePose(self.nombre)
+        # Comprobación de que se encuentra por encima del suelo
+        if self.pose.position.z_val >= 0:
+            return False
+        # Comprobación de que no ha colisionado
+        if self.client.simGetCollisionInfo(self.nombre).has_collided:
+            return False
+        return True

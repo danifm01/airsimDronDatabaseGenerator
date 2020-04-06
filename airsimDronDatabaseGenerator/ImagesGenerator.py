@@ -25,13 +25,12 @@ class ImagesGenerator:
             imagenes.append(self.dron1.tomarImagen())
         return imagenes
 
-    # TODO: Añadir cálculo de parámetros distReal (m), orientación coordAncho
-    #  (pixel), coordAlto (pixel), Radio (pixel) y ¿Bounding Box? al método
     # Devuleve una lista de nImagenes del dron 2 visto desde el dron 1,
     # otra lista con las mismas imágenes marcado donde se encuentra el dron 2
     # y una lista de listas en la que se encuentran los parámetros de cada
     # imágen tomada.
-    def tomarImagenesAleatoriasConParametros(self, nImagenes, mostrarImagen=True):
+    def tomarImagenesAleatoriasConParametros(self, nImagenes,
+                                             mostrarImagen=True):
         imagenes = []
         imagenesMarcadas = []
         parametros = []
@@ -41,6 +40,9 @@ class ImagesGenerator:
             theta, phi, distancia, poseMovido = (
                 self.dron2.moverAleatorioAcampoDeVision(
                     self.dron1.nombre))
+            time.sleep(0.2)
+            if not self.dron2.comprobarPoseCorrecta():
+                continue
             ima = self.dron1.tomarImagen(False)
             imagenes.append(ima)
             coordAncho, coordAlto = (
