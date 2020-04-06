@@ -3,6 +3,7 @@ import time
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
+from tqdm import tqdm
 
 
 # Clase encargada de tomar imágenes de un drón en el simulador airsim a
@@ -34,7 +35,7 @@ class ImagesGenerator:
         imagenes = []
         imagenesMarcadas = []
         parametros = []
-        for i in range(nImagenes):
+        for _ in tqdm(range(nImagenes)):
             self.dron1.irAposeAleatoria()
             time.sleep(0.2)
             theta, phi, distancia, poseMovido = (
