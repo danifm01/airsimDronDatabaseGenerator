@@ -21,9 +21,9 @@ class DroneController:
 
         # Parametros de la cámara
         self.cameraPosition = np.array([0.46, 0, 0])  # Metros
-        self.anchoCamara = 1280  # Pixeles
-        self.altoCamara = 720  # Pixeles
-        self.fovHorCamara = 90.  # Grados
+        self.anchoCamara = 1920  # Pixeles
+        self.altoCamara = 1080  # Pixeles
+        self.fovHorCamara = 84.  # Grados
         self.fovVerCamara = (self.fovHorCamara * self.altoCamara /
                              self.anchoCamara)  # Grados
         self.ratio = self.anchoCamara / self.altoCamara

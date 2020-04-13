@@ -11,9 +11,9 @@ class DataCalculator:
         self.poseVisor = None
         self.poseVisto = None
         # Parametros de la cámara
-        self.fovCamara = 90  # Grados
-        self.anchoCamara = 1280  # Pixeles
-        self.altoCamara = 720  # Pixeles
+        self.fovCamara = 84  # Grados
+        self.anchoCamara = 1920  # Pixeles
+        self.altoCamara = 1080  # Pixeles
         self.ratio = self.anchoCamara / self.altoCamara
         self.focal = self.anchoCamara / 2 / (
             np.tan(np.radians(self.fovCamara / 2)))  # distancia focal

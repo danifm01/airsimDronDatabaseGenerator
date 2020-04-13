@@ -8,6 +8,7 @@ from ImagesGenerator import ImagesGenerator
 from DataCalculator import DataCalculator
 from DataOrganizer import DataOrganizer
 
+
 # Devuelve el cliente de airsim para un multirotor
 def crearCliente():
     client = airsim.MultirotorClient()
