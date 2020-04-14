@@ -42,6 +42,8 @@ def teleportDron(dronName, client, pose=airsim.Pose()):
 def main():
     cliente = crearCliente()
 
+    cliente.simSetSegmentationObjectID('Drone2', 200, True)
+
     dron1 = DroneController('Drone1', cliente)
     dron2 = DroneController('Drone2', cliente)
     dataCalc = DataCalculator(cliente, 'Drone1', 'Drone2')

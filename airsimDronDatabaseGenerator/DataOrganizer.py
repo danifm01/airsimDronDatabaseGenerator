@@ -16,6 +16,16 @@ class DataOrganizer:
         self.imagenes = imagenes
         self.imagenesMarcadas = imagenesMarcadas
         self.parametros = parametros
+        self.imaNames = {
+            0: "Scene",
+            1: "DepthPlanner",
+            2: "DepthPerspective",
+            3: "DepthVis",
+            4: "DisparityNormalized",
+            5: "Segmentation",
+            6: "SurfaceNormals",
+            7: "Infrared",
+        }
 
     def addImagenes(self, imagenes: list):
         for ima in imagenes:
@@ -36,18 +46,28 @@ class DataOrganizer:
 
     def crearDataBase(self):
         nombres = []
-        dirName = self.crearDirectorio('Data\\Imagenes')
-
-        for index, ima in enumerate(self.imagenes):
-            nombre = str(index) + '_Imagen_Blocks' + '.jpg'
-            imaBGR = cv2.cvtColor(ima, cv2.COLOR_RGB2BGR)
-            cv2.imwrite(os.path.join(dirName, nombre), imaBGR)
-            nombres.append(nombre)
+        baseDir = 'Data\\Imagenes'
+        for key in self.imaNames:
+            self.crearDirectorio(baseDir + "\\" + self.imaNames[key])
+        baseDir = self.crearDirectorio(baseDir)
+        for index, setIma in enumerate(self.imagenes):
+            for i, ima in enumerate(setIma):
+                nombre = str(index) + "_" + str(i) + '_Imagen_Blocks' + '.png'
+                if i == 0:
+                    imaBGR = cv2.cvtColor(ima, cv2.COLOR_RGB2BGR)
+                    cv2.imwrite(
+                        os.path.join(baseDir + "\\" + self.imaNames[i], nombre),
+                        imaBGR)
+                    nombres.append(nombre)
+                else:
+                    cv2.imwrite(
+                        os.path.join(baseDir + "\\" + self.imaNames[i], nombre),
+                        ima)
 
         dirName = self.crearDirectorio('Data\\ImagenesMarcadas')
-        for index, ima in enumerate(self.imagenesMarcadas):
-            nombre = str(index) + '_Imagen_Marcada_Blocks' + '.jpg'
-            imaBGR = cv2.cvtColor(ima, cv2.COLOR_RGB2BGR)
+        for index, setIma in enumerate(self.imagenesMarcadas):
+            nombre = str(index) + '_Imagen_Marcada_Blocks' + '.png'
+            imaBGR = cv2.cvtColor(setIma, cv2.COLOR_RGB2BGR)
             cv2.imwrite(os.path.join(dirName, nombre), imaBGR)
 
         data = pd.DataFrame(np.array(self.parametros),
@@ -72,3 +92,4 @@ class DataOrganizer:
             else:
                 print("Directory ", dirName, " already exists")
         return dirName
+

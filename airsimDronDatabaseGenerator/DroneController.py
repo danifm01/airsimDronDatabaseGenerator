@@ -75,20 +75,36 @@ class DroneController:
 
         # Toma de imágenes
         responses = self.client.simGetImages(
-            [airsim.ImageRequest("0", airsim.ImageType.Scene, False, False)],
+            [airsim.ImageRequest("0", airsim.ImageType.Scene, False, False),
+             airsim.ImageRequest("0", airsim.ImageType.DepthPlanner, False,
+                                 False),
+             airsim.ImageRequest("0", airsim.ImageType.DepthPerspective, False,
+                                 False),
+             airsim.ImageRequest("0", airsim.ImageType.DepthVis, False, False),
+             airsim.ImageRequest("0", airsim.ImageType.DisparityNormalized,
+                                 False, False),
+             airsim.ImageRequest("0", airsim.ImageType.Segmentation, False,
+                                 False),
+             airsim.ImageRequest("0", airsim.ImageType.SurfaceNormals, False,
+                                 False),
+             airsim.ImageRequest("0", airsim.ImageType.Infrared, False, False),
+             ],
             self.nombre)
-        response = responses[0]
-        ima1d = np.frombuffer(response.image_data_uint8, dtype=np.uint8)
-        imaBGR = ima1d.reshape(response.height, response.width, 3)
-        imaRGB = cv2.cvtColor(imaBGR, cv2.COLOR_BGR2RGB)
+        imagenes = []
+        for index, response in enumerate(responses):
+            ima1d = np.frombuffer(response.image_data_uint8, dtype=np.uint8)
+            ima = ima1d.reshape(response.height, response.width, 3)
+            if index == 0:
+                ima = cv2.cvtColor(ima, cv2.COLOR_BGR2RGB)
+            imagenes.append(ima)
         if mostrar:
-            plt.imshow(imaRGB)
+            plt.imshow(imagenes[0])
             plt.show()
 
         # Colocación del dron en la posición inicial
         self.client.simSetVehiclePose(poseDronInicial, True, self.nombre)
         time.sleep(0.5)
-        return imaRGB
+        return imagenes
 
     # Entra como parámetro el nombre del dron cuyo campo de visión se utilizará.
     # El dron se moverá a una posición y orientación aleatoria dentro del

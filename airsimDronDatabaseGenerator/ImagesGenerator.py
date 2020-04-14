@@ -50,7 +50,7 @@ class ImagesGenerator:
                                                               phi))
             radioAncho = self.dataCalculator.calcularRadio(np.sqrt(2) / 2,
                                                            distancia)
-            imagenesMarcadas.append(self.dibujarRadio(ima, radioAncho,
+            imagenesMarcadas.append(self.dibujarRadio(ima[0], radioAncho,
                                                       coordAncho, coordAlto,
                                                       mostrarImagen))
 
