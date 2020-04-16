@@ -36,11 +36,11 @@ class ImagesGenerator:
         parametros = []
         for _ in tqdm(range(nImagenes)):
             self.dron1.irAposeAleatoria()
-            time.sleep(0.2)
+            time.sleep(0.5)
             theta, phi, distancia, poseMovido = (
                 self.dron2.moverAleatorioAcampoDeVision(
                     self.dron1.nombre))
-            time.sleep(0.2)
+            time.sleep(0.5)
             if not self.dron2.comprobarPoseCorrecta():
                 continue
             ima = self.dron1.tomarImagen(False)

@@ -21,10 +21,7 @@ class DataOrganizer:
             1: "DepthPlanner",
             2: "DepthPerspective",
             3: "DepthVis",
-            4: "DisparityNormalized",
-            5: "Segmentation",
-            6: "SurfaceNormals",
-            7: "Infrared",
+            4: "Segmentation",
         }
 
     def addImagenes(self, imagenes: list):

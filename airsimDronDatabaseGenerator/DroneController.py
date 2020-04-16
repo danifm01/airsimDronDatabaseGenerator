@@ -71,29 +71,28 @@ class DroneController:
         poseDronNueva.position.y_val -= cameraPos[1]
         poseDronNueva.position.z_val -= cameraPos[2]
         self.client.simSetVehiclePose(poseDronNueva, True, self.nombre)
-        time.sleep(0.2)
+        time.sleep(0.5)
 
         # Toma de imágenes
         responses = self.client.simGetImages(
             [airsim.ImageRequest("0", airsim.ImageType.Scene, False, False),
-             airsim.ImageRequest("0", airsim.ImageType.DepthPlanner, False,
+             airsim.ImageRequest("0", airsim.ImageType.DepthPlanner, True,
                                  False),
-             airsim.ImageRequest("0", airsim.ImageType.DepthPerspective, False,
+             airsim.ImageRequest("0", airsim.ImageType.DepthPerspective, True,
                                  False),
-             airsim.ImageRequest("0", airsim.ImageType.DepthVis, False, False),
-             airsim.ImageRequest("0", airsim.ImageType.DisparityNormalized,
-                                 False, False),
+             airsim.ImageRequest("0", airsim.ImageType.DepthVis, True, False),
              airsim.ImageRequest("0", airsim.ImageType.Segmentation, False,
                                  False),
-             airsim.ImageRequest("0", airsim.ImageType.SurfaceNormals, False,
-                                 False),
-             airsim.ImageRequest("0", airsim.ImageType.Infrared, False, False),
              ],
             self.nombre)
         imagenes = []
         for index, response in enumerate(responses):
             ima1d = np.frombuffer(response.image_data_uint8, dtype=np.uint8)
-            ima = ima1d.reshape(response.height, response.width, 3)
+            try:
+                ima = ima1d.reshape(response.height, response.width, 3)
+            except ValueError:
+                ima1d = np.asarray(response.image_data_float, dtype=np.float)
+                ima = ima1d.reshape(response.height, response.width)
             if index == 0:
                 ima = cv2.cvtColor(ima, cv2.COLOR_BGR2RGB)
             imagenes.append(ima)
@@ -101,7 +100,7 @@ class DroneController:
             plt.imshow(imagenes[0])
             plt.show()
 
-        # Colocación del dron en la posición inicial
+        # # Colocación del dron en la posición inicial
         self.client.simSetVehiclePose(poseDronInicial, True, self.nombre)
         time.sleep(0.5)
         return imagenes
