@@ -6,15 +6,18 @@ import os
 
 class DataOrganizer:
     def __init__(self, imagenes: list = None, imagenesMarcadas: list = None,
-                 parametros: list = None):
+                 imagenesBounding: list = None, parametros: list = None):
         if imagenes is None:
             imagenes = []
         if imagenesMarcadas is None:
             imagenesMarcadas = []
+        if imagenesBounding is None:
+            imagenesBounding = []
         if parametros is None:
             parametros = []
         self.imagenes = imagenes
         self.imagenesMarcadas = imagenesMarcadas
+        self.imagenesBounding = imagenesBounding
         self.parametros = parametros
         self.imaNames = {
             0: "Scene",
@@ -67,6 +70,12 @@ class DataOrganizer:
             imaBGR = cv2.cvtColor(setIma, cv2.COLOR_RGB2BGR)
             cv2.imwrite(os.path.join(dirName, nombre), imaBGR)
 
+        dirName = self.crearDirectorio('Data\\ImagenesBoundingBox')
+        for index, setIma in enumerate(self.imagenesBounding):
+            nombre = str(index) + '_Imagen_Marcada_Blocks' + '.png'
+            imaBGR = cv2.cvtColor(setIma, cv2.COLOR_RGB2BGR)
+            cv2.imwrite(os.path.join(dirName, nombre), imaBGR)
+
         data = pd.DataFrame(np.array(self.parametros),
                             columns=['distancia', 'phi', 'theta', 'xIma',
                                      'yIma', 'radioIma', 'orientacionVisor',
@@ -89,4 +98,3 @@ class DataOrganizer:
             else:
                 print("Directory ", dirName, " already exists")
         return dirName
-

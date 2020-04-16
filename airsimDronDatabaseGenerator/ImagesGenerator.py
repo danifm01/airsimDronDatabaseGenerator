@@ -33,6 +33,7 @@ class ImagesGenerator:
                                              mostrarImagen=True):
         imagenes = []
         imagenesMarcadas = []
+        imagenesBoundingBox = []
         parametros = []
         for _ in tqdm(range(nImagenes)):
             self.dron1.irAposeAleatoria()
@@ -53,10 +54,13 @@ class ImagesGenerator:
             imagenesMarcadas.append(self.dibujarRadio(ima[0], radioAncho,
                                                       coordAncho, coordAlto,
                                                       mostrarImagen))
-
+            x1, y1, x2, y2 = self.dataCalculator.calcularBoundingBox(ima[4])
+            imagenesBoundingBox.append(self.dibujarBoundingBox(ima[0], x1, y1,
+                                                               x2, y2,
+                                                               mostrarImagen))
             parametros.append(self.dataCalculator.calcularParametros(
                 distancia, theta, phi))
-        return imagenes, imagenesMarcadas, parametros
+        return imagenes, imagenesMarcadas, imagenesBoundingBox, parametros
 
     # Dibuja una circunferencia verde en la imágen (ima) en la posición (alto y
     # ancho) especificadas en pixeles y con el radio indicado en pixeles.
@@ -66,6 +70,15 @@ class ImagesGenerator:
         img = ima.copy()
         cv2.circle(img, (int(ancho), int(alto)), int(radio), (0, 255, 0), 3)
         cv2.circle(img, (int(ancho), int(alto)), 5, (255, 0, 0), -1)
+        if mostrar:
+            plt.imshow(img)
+            plt.show()
+        return img
+
+    @staticmethod
+    def dibujarBoundingBox(ima, x1, y1, x2, y2, mostrar=True):
+        img = ima.copy()
+        cv2.rectangle(img, (x1, y1), (x2, y2), (0, 0, 255), 3)
         if mostrar:
             plt.imshow(img)
             plt.show()

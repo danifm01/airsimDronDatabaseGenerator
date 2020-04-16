@@ -91,3 +91,12 @@ class DataCalculator:
         orientacionRelativa = self.orientacionRelativaVisto(False)
         return [distancia, phi, theta, xIma, yIma, radioIma, orientacionVisor,
                 orientacionVisto, orientacionRelativa]
+
+    @staticmethod
+    def calcularBoundingBox(segIma, colorObject=(50, 96, 227)):
+        puntosDron = np.where(segIma == colorObject)
+        x1 = puntosDron[1].min()
+        y1 = puntosDron[0].min()
+        x2 = puntosDron[1].max()
+        y2 = puntosDron[0].max()
+        return x1, y1, x2, y2

@@ -49,9 +49,10 @@ def main():
     dataCalc = DataCalculator(cliente, 'Drone1', 'Drone2')
 
     generador = ImagesGenerator(dron1, dron2, dataCalc)
-    imagenes, imagenesMarcadas, parametros = (
+    imagenes, imagenesMarcadas, imagenesBounding, parametros = (
         generador.tomarImagenesAleatoriasConParametros(50, False))
-    organizador = DataOrganizer(imagenes, imagenesMarcadas, parametros)
+    organizador = DataOrganizer(imagenes, imagenesMarcadas, imagenesBounding,
+                                parametros)
     organizador.crearDataBase()
 
 
