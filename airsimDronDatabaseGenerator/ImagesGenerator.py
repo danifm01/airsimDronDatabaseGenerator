@@ -54,12 +54,14 @@ class ImagesGenerator:
             imagenesMarcadas.append(self.dibujarRadio(ima[0], radioAncho,
                                                       coordAncho, coordAlto,
                                                       mostrarImagen))
-            x1, y1, x2, y2 = self.dataCalculator.calcularBoundingBox(ima[4])
-            imagenesBoundingBox.append(self.dibujarBoundingBox(ima[0], x1, y1,
-                                                               x2, y2,
+            param = self.dataCalculator.calcularParametros(distancia, theta,
+                                                           phi, ima[4])
+            parametros.append(param)
+            imagenesBoundingBox.append(self.dibujarBoundingBox(ima[0], param[6],
+                                                               param[7],
+                                                               param[8],
+                                                               param[9],
                                                                mostrarImagen))
-            parametros.append(self.dataCalculator.calcularParametros(
-                distancia, theta, phi))
         return imagenes, imagenesMarcadas, imagenesBoundingBox, parametros
 
     # Dibuja una circunferencia verde en la imágen (ima) en la posición (alto y

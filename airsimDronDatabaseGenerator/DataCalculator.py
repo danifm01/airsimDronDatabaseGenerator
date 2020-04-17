@@ -81,7 +81,7 @@ class DataCalculator:
         radio = radioReal * self.focal / distancia
         return radio
 
-    def calcularParametros(self, distancia, theta, phi):
+    def calcularParametros(self, distancia, theta, phi, segIma):
         self.updatePose()
         xIma, yIma = self.calcularCoordenadasImagen(distancia, theta, phi,
                                                     False)
@@ -89,8 +89,10 @@ class DataCalculator:
         orientacionVisor = self.orientacionAbsolutaVisor(False)
         orientacionVisto = self.orientacionAbsolutaVisto(False)
         orientacionRelativa = self.orientacionRelativaVisto(False)
-        return [distancia, phi, theta, xIma, yIma, radioIma, orientacionVisor,
-                orientacionVisto, orientacionRelativa]
+        x1, y1, x2, y2 = self.calcularBoundingBox(segIma)
+        return [distancia, phi, theta, xIma, yIma, radioIma,
+                x1, y1, x2, y2, orientacionVisor, orientacionVisto,
+                orientacionRelativa]
 
     @staticmethod
     def calcularBoundingBox(segIma, colorObject=(50, 96, 227)):

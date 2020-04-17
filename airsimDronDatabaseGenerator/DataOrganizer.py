@@ -78,9 +78,9 @@ class DataOrganizer:
 
         data = pd.DataFrame(np.array(self.parametros),
                             columns=['distancia', 'phi', 'theta', 'xIma',
-                                     'yIma', 'radioIma', 'orientacionVisor',
-                                     'orientacionVisto',
-                                     'orientacionRelativa'])
+                                     'yIma', 'radioIma', 'x1BB', 'y1BB',
+                                     'x2BB', 'y2BB', 'orientacionVisor',
+                                     'orientacionVisto', 'orientacionRelativa'])
         data.insert(0, 'nombre', nombres)
         dirName = self.crearDirectorio('Data\\Parametros')
         data.to_csv(os.path.join(dirName, 'Parametros.csv'), index=False)
