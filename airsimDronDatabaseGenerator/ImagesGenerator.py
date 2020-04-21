@@ -64,6 +64,49 @@ class ImagesGenerator:
                                                                mostrarImagen))
         return imagenes, imagenesMarcadas, imagenesBoundingBox, parametros
 
+    def tomarImagenesAleatoriasConParametrosFases(self, muestrasBase,
+                                                  inicio=5, paso=5, fin=50,
+                                                  mostrarImagen=True):
+        imagenes = []
+        imagenesMarcadas = []
+        imagenesBoundingBox = []
+        parametros = []
+        for index, dist in enumerate(range(inicio, fin, paso)):
+            print(f"Fase: {index + 1}, Distancia: {dist}")
+            time.sleep(0.0001)
+            for _ in tqdm(range(muestrasBase * (index + 1))):
+                self.dron1.irAposeAleatoria()
+                time.sleep(0.5)
+                theta, phi, distancia, poseMovido = (
+                    self.dron2.moverAleatorioAcampoDeVision(
+                        self.dron1.nombre, dist, paso / 2))
+                time.sleep(0.5)
+                if not self.dron2.comprobarPoseCorrecta():
+                    continue
+                ima = self.dron1.tomarImagen(False)
+                coordAncho, coordAlto = (
+                    self.dataCalculator.calcularCoordenadasImagen(distancia,
+                                                                  theta,
+                                                                  phi))
+                radioAncho = self.dataCalculator.calcularRadio(np.sqrt(2) / 2,
+                                                               distancia)
+                param = self.dataCalculator.calcularParametros(distancia, theta,
+                                                               phi, ima[4])
+                if param == -1:
+                    continue
+                imagenes.append(ima)
+                imagenesMarcadas.append(self.dibujarRadio(ima[0], radioAncho,
+                                                          coordAncho, coordAlto,
+                                                          mostrarImagen))
+                parametros.append(param)
+                imagenesBoundingBox.append(
+                    self.dibujarBoundingBox(ima[0], param[6],
+                                            param[7],
+                                            param[8],
+                                            param[9],
+                                            mostrarImagen))
+        return imagenes, imagenesMarcadas, imagenesBoundingBox, parametros
+
     # Dibuja una circunferencia verde en la imágen (ima) en la posición (alto y
     # ancho) especificadas en pixeles y con el radio indicado en pixeles.
     # Marca el centro de la circunfernecia mediante un punto rojo

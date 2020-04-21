@@ -90,6 +90,8 @@ class DataCalculator:
         orientacionVisto = self.orientacionAbsolutaVisto(False)
         orientacionRelativa = self.orientacionRelativaVisto(False)
         x1, y1, x2, y2 = self.calcularBoundingBox(segIma)
+        if x1 == -1:
+            return -1
         return [distancia, phi, theta, xIma, yIma, radioIma,
                 x1, y1, x2, y2, orientacionVisor, orientacionVisto,
                 orientacionRelativa]
@@ -97,8 +99,11 @@ class DataCalculator:
     @staticmethod
     def calcularBoundingBox(segIma, colorObject=(50, 96, 227)):
         puntosDron = np.where(segIma == colorObject)
-        x1 = puntosDron[1].min()
-        y1 = puntosDron[0].min()
-        x2 = puntosDron[1].max()
-        y2 = puntosDron[0].max()
+        try:
+            y1 = puntosDron[0].min()
+            x1 = puntosDron[1].min()
+            x2 = puntosDron[1].max()
+            y2 = puntosDron[0].max()
+        except ValueError:
+            return -1, -1, -1, -1
         return x1, y1, x2, y2

@@ -110,8 +110,11 @@ class DroneController:
     # campo de visión del dronVisor. Devuelve la distancia a la cámara,
     # los valores de los ángulos relativos a ella y la pose a la que se mueve
     # el dron.
-    def moverAleatorioAcampoDeVision(self, dronVisor):
-        distancia = random.uniform(2, 10)
+    def moverAleatorioAcampoDeVision(self, dronVisor, distanciaBase,
+                                     variacionDist=2.5):
+        # distancia = random.uniform(2, 10)
+        distancia = distanciaBase + random.uniform(-variacionDist,
+                                                   variacionDist)
         maxPhi = self.fovHorCamara / 2
         maxTheta = self.fovVerCamara / 2
         poseVisor = self.client.simGetVehiclePose(dronVisor)

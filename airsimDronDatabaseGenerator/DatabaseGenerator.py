@@ -50,7 +50,7 @@ def main():
 
     generador = ImagesGenerator(dron1, dron2, dataCalc)
     imagenes, imagenesMarcadas, imagenesBounding, parametros = (
-        generador.tomarImagenesAleatoriasConParametros(50, False))
+        generador.tomarImagenesAleatoriasConParametrosFases(5, 5, 5, 50, False))
     organizador = DataOrganizer(imagenes, imagenesMarcadas, imagenesBounding,
                                 parametros)
     organizador.crearDataBase()
