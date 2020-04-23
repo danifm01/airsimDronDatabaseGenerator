@@ -73,7 +73,9 @@ class ImagesGenerator:
         parametros = []
         for index, dist in enumerate(range(inicio, fin, paso)):
             print(f"Fase: {index + 1}, Distancia: {dist}", flush=True)
-            for _ in tqdm(range(muestrasBase * (index + 1))):
+            i = 0
+            pbar = tqdm(total=muestrasBase * (index + 1))
+            while i < muestrasBase * (index + 1):
                 self.dron1.irAposeAleatoria()
                 time.sleep(0.5)
                 theta, phi, distancia, poseMovido = (
@@ -104,6 +106,9 @@ class ImagesGenerator:
                                             param[8],
                                             param[9],
                                             mostrarImagen))
+                i += 1
+                pbar.update(1)
+            pbar.close()
         return imagenes, imagenesMarcadas, imagenesBoundingBox, parametros
 
     # Dibuja una circunferencia verde en la imágen (ima) en la posición (alto y
