@@ -47,21 +47,31 @@ class DataOrganizer:
     def crearDataBase(self):
         nombres = []
         baseDir = 'Data\\Imagenes'
+        entorno = 'Blocks'
         for key in self.imaNames:
             self.crearDirectorio(baseDir + "\\" + self.imaNames[key])
         baseDir = self.crearDirectorio(baseDir)
         for index, setIma in enumerate(self.imagenes):
             for i, ima in enumerate(setIma):
                 nombre = str(index) + "_" + str(i) + '_Imagen_Blocks' + '.png'
+                nombre = f'{index}_{i}_Imagen_{entorno}'
+                # Imagen de la escena
                 if i == 0:
                     imaBGR = cv2.cvtColor(ima, cv2.COLOR_RGB2BGR)
                     cv2.imwrite(
-                        os.path.join(baseDir + "\\" + self.imaNames[i], nombre),
+                        os.path.join(baseDir + "\\" + self.imaNames[i],
+                                     f'{nombre}.png'),
                         imaBGR)
                     nombres.append(nombre)
+                # Guardar np array de profundidad en perspectiva y planar
+                elif i == 1 or i == 2:
+                    np.save(os.path.join(baseDir + "\\" + self.imaNames[
+                        i], f'{nombre}.npy'), ima)
+                # Guarda las imágenes de profundidad para visión y segmentación
                 else:
                     cv2.imwrite(
-                        os.path.join(baseDir + "\\" + self.imaNames[i], nombre),
+                        os.path.join(baseDir + "\\" + self.imaNames[i],
+                                     f'{nombre}.png'),
                         ima)
 
         dirName = self.crearDirectorio('Data\\ImagenesMarcadas')

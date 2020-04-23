@@ -72,8 +72,7 @@ class ImagesGenerator:
         imagenesBoundingBox = []
         parametros = []
         for index, dist in enumerate(range(inicio, fin, paso)):
-            print(f"Fase: {index + 1}, Distancia: {dist}")
-            time.sleep(0.0001)
+            print(f"Fase: {index + 1}, Distancia: {dist}", flush=True)
             for _ in tqdm(range(muestrasBase * (index + 1))):
                 self.dron1.irAposeAleatoria()
                 time.sleep(0.5)
