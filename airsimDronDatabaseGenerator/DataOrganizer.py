@@ -77,13 +77,13 @@ class DataOrganizer:
 
         dirName = self.crearDirectorio('Data\\ImagenesMarcadas')
         for index, setIma in enumerate(tqdm(self.imagenesMarcadas)):
-            nombre = str(index) + '_Imagen_Marcada_Blocks' + '.png'
+            nombre = f'{index + 1 + ultima}_Imagen_Marcada_{entorno}.png'
             imaBGR = cv2.cvtColor(setIma, cv2.COLOR_RGB2BGR)
             cv2.imwrite(os.path.join(dirName, nombre), imaBGR)
 
         dirName = self.crearDirectorio('Data\\ImagenesBoundingBox')
         for index, setIma in enumerate(tqdm(self.imagenesBounding)):
-            nombre = str(index) + '_Imagen_Marcada_Blocks' + '.png'
+            nombre = f'{index + 1 + ultima}_Imagen_BoundingBox_{entorno}.png'
             imaBGR = cv2.cvtColor(setIma, cv2.COLOR_RGB2BGR)
             cv2.imwrite(os.path.join(dirName, nombre), imaBGR)
 
