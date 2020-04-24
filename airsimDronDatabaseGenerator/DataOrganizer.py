@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import cv2
 import os
+from tqdm import tqdm
 
 
 class DataOrganizer:
@@ -51,9 +52,8 @@ class DataOrganizer:
         for key in self.imaNames:
             self.crearDirectorio(baseDir + "\\" + self.imaNames[key])
         baseDir = self.crearDirectorio(baseDir)
-        for index, setIma in enumerate(self.imagenes):
+        for index, setIma in enumerate(tqdm(self.imagenes)):
             for i, ima in enumerate(setIma):
-                nombre = str(index) + "_" + str(i) + '_Imagen_Blocks' + '.png'
                 nombre = f'{index}_{i}_Imagen_{entorno}'
                 # Imagen de la escena
                 if i == 0:
@@ -75,13 +75,13 @@ class DataOrganizer:
                         ima)
 
         dirName = self.crearDirectorio('Data\\ImagenesMarcadas')
-        for index, setIma in enumerate(self.imagenesMarcadas):
+        for index, setIma in enumerate(tqdm(self.imagenesMarcadas)):
             nombre = str(index) + '_Imagen_Marcada_Blocks' + '.png'
             imaBGR = cv2.cvtColor(setIma, cv2.COLOR_RGB2BGR)
             cv2.imwrite(os.path.join(dirName, nombre), imaBGR)
 
         dirName = self.crearDirectorio('Data\\ImagenesBoundingBox')
-        for index, setIma in enumerate(self.imagenesBounding):
+        for index, setIma in enumerate(tqdm(self.imagenesBounding)):
             nombre = str(index) + '_Imagen_Marcada_Blocks' + '.png'
             imaBGR = cv2.cvtColor(setIma, cv2.COLOR_RGB2BGR)
             cv2.imwrite(os.path.join(dirName, nombre), imaBGR)
@@ -93,7 +93,8 @@ class DataOrganizer:
                                      'orientacionVisto', 'orientacionRelativa'])
         data.insert(0, 'nombre', nombres)
         dirName = self.crearDirectorio('Data\\Parametros')
-        data.to_csv(os.path.join(dirName, 'Parametros.csv'), index=False)
+        data.to_csv(os.path.join(dirName, f'Parametros_{entorno}.csv'),
+                    index=False)
         return data
 
     @staticmethod
