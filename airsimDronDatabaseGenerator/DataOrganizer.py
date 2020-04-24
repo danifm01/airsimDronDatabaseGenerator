@@ -90,8 +90,19 @@ class DataOrganizer:
         data = pd.DataFrame(np.array(self.parametros),
                             columns=['distancia', 'phi', 'theta', 'xIma',
                                      'yIma', 'radioIma', 'x1BB', 'y1BB',
-                                     'x2BB', 'y2BB', 'orientacionVisor',
-                                     'orientacionVisto', 'orientacionRelativa'])
+                                     'x2BB', 'y2BB',
+                                     'orientacionVisor_x',
+                                     'orientacionVisor_y',
+                                     'orientacionVisor_z',
+                                     'orientacionVisor_w',
+                                     'orientacionVisto_x',
+                                     'orientacionVisto_y',
+                                     'orientacionVisto_z',
+                                     'orientacionVisto_w',
+                                     'orientacionRelativa_x',
+                                     'orientacionRelativa_y',
+                                     'orientacionRelativa_z',
+                                     'orientacionRelativa_w'])
         data.insert(0, 'nombre', nombres)
         dirName = self.crearDirectorio('Data\\Parametros')
         if os.path.exists(os.path.join(dirName, f'Parametros_{entorno}.csv')):
