@@ -71,7 +71,7 @@ class ImagesGenerator:
         imagenesMarcadas = []
         imagenesBoundingBox = []
         parametros = []
-        for index, dist in enumerate(range(inicio, fin, paso)):
+        for index, dist in enumerate(range(inicio, fin + paso, paso)):
             print(f"Fase: {index + 1}, Distancia: {dist}", flush=True)
             i = 0
             pbar = tqdm(total=muestrasBase * (index + 1))
