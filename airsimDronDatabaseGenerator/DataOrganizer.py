@@ -50,11 +50,12 @@ class DataOrganizer:
         baseDir = 'Data\\Imagenes'
         entorno = 'Blocks'
         for key in self.imaNames:
-            self.crearDirectorio(baseDir + "\\" + self.imaNames[key])
+            self.crearDirectorio(f'{baseDir}\\{self.imaNames[key]}')
         baseDir = self.crearDirectorio(baseDir)
+        ultima = self.comprobarUltimaImagen(f'{baseDir}\\{self.imaNames[0]}')
         for index, setIma in enumerate(tqdm(self.imagenes)):
             for i, ima in enumerate(setIma):
-                nombre = f'{index}_{i}_Imagen_{entorno}'
+                nombre = f'{index + 1 + ultima}_{i}_Imagen_{entorno}'
                 # Imagen de la escena
                 if i == 0:
                     imaBGR = cv2.cvtColor(ima, cv2.COLOR_RGB2BGR)
@@ -93,9 +94,22 @@ class DataOrganizer:
                                      'orientacionVisto', 'orientacionRelativa'])
         data.insert(0, 'nombre', nombres)
         dirName = self.crearDirectorio('Data\\Parametros')
-        data.to_csv(os.path.join(dirName, f'Parametros_{entorno}.csv'),
-                    index=False)
+        if os.path.exists(os.path.join(dirName, f'Parametros_{entorno}.csv')):
+            data.to_csv(os.path.join(dirName, f'Parametros_{entorno}.csv'),
+                        mode="a", index=False, header=False)
+        else:
+            data.to_csv(os.path.join(dirName, f'Parametros_{entorno}.csv'),
+                        mode="a", index=False, header=True)
         return data
+
+    @staticmethod
+    def comprobarUltimaImagen(path):
+        numeros = []
+        for ima in os.listdir(path):
+            numeros.append(int(ima.split("_", 1)[0]))
+        if not numeros:
+            return -1
+        return max(numeros)
 
     @staticmethod
     def crearDirectorio(ruta: str):
