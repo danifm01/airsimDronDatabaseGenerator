@@ -47,12 +47,15 @@ def main():
     dron1 = DroneController('Drone1', cliente)
     dron2 = DroneController('Drone2', cliente)
     dataCalc = DataCalculator(cliente, 'Drone1', 'Drone2')
-    for i in range(10):
+    iteraciones = 1
+    entorno = 'Blocks'
+    for i in range(iteraciones):
+        print(f'Iteracion {i + 1} de {iteraciones}')
         generador = ImagesGenerator(dron1, dron2, dataCalc)
         imagenes, imagenesMarcadas, imagenesBounding, parametros = (
             generador.tomarImagenesAleatoriasConParametrosFases(1, 5, 5, 50,
                                                                 False))
-        organizador = DataOrganizer(imagenes, imagenesMarcadas,
+        organizador = DataOrganizer(entorno, imagenes, imagenesMarcadas,
                                     imagenesBounding,
                                     parametros)
         organizador.crearDataBase()

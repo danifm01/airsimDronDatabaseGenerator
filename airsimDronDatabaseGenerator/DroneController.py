@@ -39,8 +39,8 @@ class DroneController:
     # Mueve el dron a una pose aleatoria con valores de posición entre los
     # límites pasados como parámetros y como orientación valores de pitch
     # y roll entre -0.8 y 0.8 radianes y de yaw entre -pi y pi
-    def irAposeAleatoria(self, x_max=10, x_min=-10, y_max=10, y_min=-10,
-                         z_max=-1, z_min=-10):
+    def irAposeAleatoria(self, x_max=100, x_min=-100, y_max=100, y_min=-100,
+                         z_max=-1, z_min=-20):
         x = random.uniform(x_min, x_max)
         y = random.uniform(y_min, y_max)
         z = random.uniform(z_min, z_max)

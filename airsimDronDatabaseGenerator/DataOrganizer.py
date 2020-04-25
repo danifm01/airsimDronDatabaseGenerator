@@ -6,8 +6,9 @@ from tqdm import tqdm
 
 
 class DataOrganizer:
-    def __init__(self, imagenes: list = None, imagenesMarcadas: list = None,
-                 imagenesBounding: list = None, parametros: list = None):
+    def __init__(self, entorno: str = 'Blocks', imagenes: list = None,
+                 imagenesMarcadas: list = None, imagenesBounding: list = None,
+                 parametros: list = None):
         if imagenes is None:
             imagenes = []
         if imagenesMarcadas is None:
@@ -16,6 +17,7 @@ class DataOrganizer:
             imagenesBounding = []
         if parametros is None:
             parametros = []
+        self.entorno = entorno
         self.imagenes = imagenes
         self.imagenesMarcadas = imagenesMarcadas
         self.imagenesBounding = imagenesBounding
@@ -48,14 +50,13 @@ class DataOrganizer:
     def crearDataBase(self):
         nombres = []
         baseDir = 'Data\\Imagenes'
-        entorno = 'Blocks'
         for key in self.imaNames:
             self.crearDirectorio(f'{baseDir}\\{self.imaNames[key]}')
         baseDir = self.crearDirectorio(baseDir)
         ultima = self.comprobarUltimaImagen(f'{baseDir}\\{self.imaNames[0]}')
         for index, setIma in enumerate(tqdm(self.imagenes)):
             for i, ima in enumerate(setIma):
-                nombre = f'{index + 1 + ultima}_{i}_Imagen_{entorno}'
+                nombre = f'{index + 1 + ultima}_{i}_Imagen_{self.entorno}'
                 # Imagen de la escena
                 if i == 0:
                     imaBGR = cv2.cvtColor(ima, cv2.COLOR_RGB2BGR)
@@ -77,13 +78,14 @@ class DataOrganizer:
 
         dirName = self.crearDirectorio('Data\\ImagenesMarcadas')
         for index, setIma in enumerate(tqdm(self.imagenesMarcadas)):
-            nombre = f'{index + 1 + ultima}_Imagen_Marcada_{entorno}.png'
+            nombre = f'{index + 1 + ultima}_Imagen_Marcada_{self.entorno}.png'
             imaBGR = cv2.cvtColor(setIma, cv2.COLOR_RGB2BGR)
             cv2.imwrite(os.path.join(dirName, nombre), imaBGR)
 
         dirName = self.crearDirectorio('Data\\ImagenesBoundingBox')
         for index, setIma in enumerate(tqdm(self.imagenesBounding)):
-            nombre = f'{index + 1 + ultima}_Imagen_BoundingBox_{entorno}.png'
+            nombre = f'{index + 1 + ultima}_Imagen_BoundingB' \
+                     f'ox_{self.entorno}.png'
             imaBGR = cv2.cvtColor(setIma, cv2.COLOR_RGB2BGR)
             cv2.imwrite(os.path.join(dirName, nombre), imaBGR)
 
@@ -105,12 +107,22 @@ class DataOrganizer:
                                      'orientacionRelativa_w'])
         data.insert(0, 'nombre', nombres)
         dirName = self.crearDirectorio('Data\\Parametros')
-        if os.path.exists(os.path.join(dirName, f'Parametros_{entorno}.csv')):
-            data.to_csv(os.path.join(dirName, f'Parametros_{entorno}.csv'),
+        # Guaradado en archivo independiente
+        if os.path.exists(os.path.join(dirName, f'Paramet'
+                                                f'ros_{self.entorno}.csv')):
+            data.to_csv(os.path.join(dirName, f'Parametros_{self.entorno}.csv'),
                         mode="a", index=False, header=False)
         else:
-            data.to_csv(os.path.join(dirName, f'Parametros_{entorno}.csv'),
+            data.to_csv(os.path.join(dirName, f'Parametros_{self.entorno}.csv'),
                         mode="a", index=False, header=True)
+        # Guardado en archivo global
+        if os.path.exists(os.path.join(dirName, f'Parametros.csv')):
+            data.to_csv(os.path.join(dirName, f'Parametros.csv'),
+                        mode="a", index=False, header=False)
+        else:
+            data.to_csv(os.path.join(dirName, f'Parametros.csv'),
+                        mode="a", index=False, header=True)
+
         return data
 
     @staticmethod
