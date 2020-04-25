@@ -106,8 +106,11 @@ class DataCalculator:
                 oAVtw, oRx, oRy, oRz, oRw]
 
     @staticmethod
-    def calcularBoundingBox(segIma, colorObject=(50, 96, 227)):
+    def calcularBoundingBox(segIma, colorObject=(232, 119, 114)):
         puntosDron = np.where(segIma == colorObject)
+        # Mínimo número de pixeles para que se considere válida la posición
+        if len(puntosDron[0]) < 1000:
+            return -1, -1, -1, -1
         try:
             y1 = puntosDron[0].min()
             x1 = puntosDron[1].min()
