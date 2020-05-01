@@ -40,7 +40,7 @@ class DroneController:
     # límites pasados como parámetros y como orientación valores de pitch
     # y roll entre -0.8 y 0.8 radianes y de yaw entre -pi y pi
     def irAposeAleatoria(self, x_max=100, x_min=-100, y_max=100, y_min=-100,
-                         z_max=-1, z_min=-20):
+                         z_max=-1, z_min=-10):
         x = random.uniform(x_min, x_max)
         y = random.uniform(y_min, y_max)
         z = random.uniform(z_min, z_max)
@@ -89,12 +89,17 @@ class DroneController:
         for index, response in enumerate(responses):
             ima1d = np.frombuffer(response.image_data_uint8, dtype=np.uint8)
             try:
-                ima = ima1d.reshape(response.height, response.width, 3)
-            except ValueError:
-                ima1d = np.asarray(response.image_data_float, dtype=np.float)
-                ima = ima1d.reshape(response.height, response.width)
-            if index == 0:
-                ima = cv2.cvtColor(ima, cv2.COLOR_BGR2RGB)
+                try:
+                    ima = ima1d.reshape(response.height, response.width, 3)
+                except ValueError:
+                    ima1d = np.asarray(response.image_data_float,
+                                       dtype=np.float)
+                    ima = ima1d.reshape(response.height, response.width)
+                if index == 0:
+                    ima = cv2.cvtColor(ima, cv2.COLOR_BGR2RGB)
+            # Si se produce un error inesperado se devuelve -1
+            except:
+                return -1
             imagenes.append(ima)
         if mostrar:
             plt.imshow(imagenes[0])

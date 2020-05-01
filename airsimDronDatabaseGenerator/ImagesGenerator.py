@@ -85,6 +85,8 @@ class ImagesGenerator:
                 if not self.dron2.comprobarPoseCorrecta():
                     continue
                 ima = self.dron1.tomarImagen(False)
+                if ima == -1:
+                    continue
                 coordAncho, coordAlto = (
                     self.dataCalculator.calcularCoordenadasImagen(distancia,
                                                                   theta,
